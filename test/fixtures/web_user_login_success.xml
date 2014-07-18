@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <soap:Header>
+        <AuthorizationToken xmlns="http://www.avectra.com/2005/">
+            <Token>dcefe50a-8561-4c58-878b-07b11ad1fe3b</Token>
+        </AuthorizationToken>
+    </soap:Header>
+    <soap:Body>
+        <WEBWebUserLoginResponse xmlns="http://www.avectra.com/2005/">
+            <WEBWebUserLoginResult>
+                <CurrentKey>3147d4b5-d04a-4a8f-bbf3-3fe54fd2fcaa</CurrentKey>
+                <Individual>
+                    <ind_cst_key>3147d4b5-d04a-4a8f-bbf3-3fe54fd2fcaa</ind_cst_key>
+                    <ind_first_name>Sergey</ind_first_name>
+                    <ind_last_name>Yushkevich</ind_last_name>
+                    <ind_full_name_cp>Mr. Sergey Yushkevich</ind_full_name_cp>
+                    <ind_token>4331be14-42b1-458b-9af0-aadd2558d1b5</ind_token>
+                </Individual>
+                <Customer>
+                    <cst_recno>7881250</cst_recno>
+                </Customer>
+                <Email>
+                    <eml_address>yushkevich@irwaonline.org</eml_address>
+                </Email>
+                <Business_Address>
+                    <adr_city>Gardena</adr_city>
+                    <adr_state>CA</adr_state>
+                    <adr_post_code>90248</adr_post_code>
+                    <adr_country>United States</adr_country>
+                </Business_Address>
+                <Business_Phone>
+                    <phn_number>3105380233</phn_number>
+                </Business_Phone>
+                <Business_Phone_XRef>
+                    <cph_extension>127</cph_extension>
+                </Business_Phone_XRef>
+                <Business_Fax>
+                    <fax_number>3105381471</fax_number>
+                </Business_Fax>
+            </WEBWebUserLoginResult>
+        </WEBWebUserLoginResponse>
+    </soap:Body>
+</soap:Envelope>

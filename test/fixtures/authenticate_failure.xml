@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <soap:Body>
+        <soap:Fault>
+            <faultcode>soap:Client</faultcode>
+            <faultstring>System.Web.Services.Protocols.SoapException: Invalid Credentials Supplied
+   at Avectra.netForum.xWeb.xWebSecure.netForumXMLSecure.Authenticate(String userName, String password)</faultstring>
+            <faultactor>https://www.irwaonline.org/xweb/secure/netForumXML.asmx</faultactor>
+            <detail>
+                <InvalidCredentialsExceptionInfo xmlns="http://www.avectra.com/2005/">
+                    <XWebException xmlns="http://www.avectra.com/2005/">
+                        <Message>Invalid Credentials Supplied</Message>
+                        <Number>0</Number>
+                        <Source>xWeb</Source>
+                        <Line>0</Line>
+                        <StackTrace>   at Avectra.netForum.xWeb.xWebSecure.netForumXMLSecure.Authenticate(String userName, String password)</StackTrace>
+                        <ErrorType>GeneralError</ErrorType>
+                        <Errors />
+                    </XWebException>
+                </InvalidCredentialsExceptionInfo>
+            </detail>
+        </soap:Fault>
+    </soap:Body>
+</soap:Envelope>

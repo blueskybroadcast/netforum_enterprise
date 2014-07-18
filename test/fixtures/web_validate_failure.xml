@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <soap:Header>
+        <AuthorizationToken xmlns="http://www.avectra.com/2005/">
+            <Token>26198c32-cb85-4e4f-a959-9ced3ce0c135</Token>
+        </AuthorizationToken>
+    </soap:Header>
+    <soap:Body>
+        <WebValidateResponse xmlns="http://www.avectra.com/2005/">
+            <WebValidateResult>00000000-0000-0000-0000-000000000000</WebValidateResult>
+        </WebValidateResponse>
+    </soap:Body>
+</soap:Envelope>

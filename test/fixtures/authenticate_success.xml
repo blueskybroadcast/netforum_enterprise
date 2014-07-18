@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <soap:Header>
+        <AuthorizationToken soap:actor="6476cd99-aa6b-4523-b974-3c378607ddc5" xmlns="http://www.avectra.com/2005/">
+            <Token>b667d671-9ba0-4d9c-b37b-9180fcc85cda</Token>
+        </AuthorizationToken>
+    </soap:Header>
+    <soap:Body>
+        <AuthenticateResponse xmlns="http://www.avectra.com/2005/">
+            <AuthenticateResult>http://www.avectra.com/2005/</AuthenticateResult>
+        </AuthenticateResponse>
+    </soap:Body>
+</soap:Envelope>

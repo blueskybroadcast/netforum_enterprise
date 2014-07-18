@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <soap:Header>
+        <AuthorizationToken xmlns="http://www.avectra.com/2005/">
+            <Token>34cf6932-8840-46cb-82d9-bf945e7c91a2</Token>
+        </AuthorizationToken>
+    </soap:Header>
+    <soap:Body>
+        <GetIndividualInformationResponse xmlns="http://www.avectra.com/2005/">
+            <GetIndividualInformationResult>
+                <IndividualObjects xsi:schemaLocation="http://www.avectra.com/2005/ Individual.xsd" recordReturn="1">
+                    <IndividualObject>
+                        <ind_cst_key>3147d4b5-d04a-4a8f-bbf3-3fe54fd2fcaa</ind_cst_key>
+                        <ind_prf_code>Mr.</ind_prf_code>
+                        <ind_first_name>Sergey</ind_first_name>
+                        <ind_mid_name />
+                        <ind_last_name>Yushkevich</ind_last_name>
+                        <ind_sfx_code />
+                        <ind_designation />
+                        <ind_int_code>IRWA Staff</ind_int_code>
+                        <ind_badge_name>Sergey</ind_badge_name>
+                        <ixo_title>Computer Service Senior Manager</ixo_title>
+                        <cst_id>007881250I</cst_id>
+                        <cst_member_flag>1</cst_member_flag>
+                        <vst_member_flag>1</vst_member_flag>
+                        <phn_number>(310)538-0233 (127)</phn_number>
+                        <fax_number>(310)538-1471</fax_number>
+                        <eml_address>yushkevich@irwaonline.org</eml_address>
+                        <adr_line1>19210 South Vermont Avenue</adr_line1>
+                        <adr_line2>Bldg. A, Suite 100</adr_line2>
+                        <adr_line3 />
+                        <adr_city>Gardena</adr_city>
+                        <adr_state>CA</adr_state>
+                        <adr_post_code>90248</adr_post_code>
+                        <adr_country>United States</adr_country>
+                    </IndividualObject>
+                </IndividualObjects>
+            </GetIndividualInformationResult>
+        </GetIndividualInformationResponse>
+    </soap:Body>
+</soap:Envelope>
