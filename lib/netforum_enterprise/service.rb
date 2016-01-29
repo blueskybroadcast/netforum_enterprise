@@ -13,22 +13,13 @@ module NetforumEnterprise
 
     def authenticate
       begin
-        response = client(false).call(:authenticate, message: {'userName' => @username, 'password' => @password})
-        @auth_token = response.header[:authorization_token][:token]
+        response = client(false).call(:authenticate, message: { 'userName' => @username, 'password' => @password })
+        @auth_token = response.header[:authorization_token][:token] if response.header[:authorization_token][:token].present?
         true
-      rescue Savon::SOAPFault => e
+      rescue Savon::SOAPFault => _e
         @auth_token = nil
         false
       end
-    end
-
-    def authenticated?
-      !@auth_token.nil?
-    end
-
-    def authentication_token
-      authenticate unless authenticated?
-      @auth_token
     end
 
     def get_individual_information(customer_key)
@@ -50,20 +41,24 @@ module NetforumEnterprise
 
     def client(with_auth_token=true)
       if with_auth_token
-        options = Configuration.client_options.merge(soap_header: {'tns:AuthorizationToken' => {'tns:Token' => authentication_token}})
+        options = Configuration.client_options.merge(soap_header: {'tns:AuthorizationToken' => {'tns:Token' => @auth_token}})
       else
         options = Configuration.client_options
       end
 
       Savon.client(options) do |globals|
         globals.wsdl Configuration.wsdl
+        globals.log true
+        globals.logger Rails.logger
+        globals.log_level :debug
+        globals.pretty_print_xml true
       end
     end
 
     def get_result(service, params, options={})
       begin
         response = client.call(service.to_sym, message: params)
-
+        @auth_token = response.header[:authorization_token][:token] if response.header[:authorization_token][:token].present?
         output_name = options[:output_name] || service
 
         if response.success? && response.body["#{output_name}_response".to_sym]["#{output_name}_result".to_sym]
@@ -71,7 +66,7 @@ module NetforumEnterprise
         else
           nil
         end
-      rescue Savon::SOAPFault => e
+      rescue Savon::SOAPFault => _e
         nil
       end
     end
