@@ -1,7 +1,7 @@
 module NetforumEnterprise
   class Configuration
     def self.wsdl(value=nil)
-      @wsdl = value || @wsdl || 'https://www.irwaonline.org/xweb/secure/netForumXML.asmx?WSDL'
+      @wsdl = value || @wsdl || 'https://eweb.foodexport.org/nffoodextest/xweb/secure/netForumXML.asmx?WSDL'
     end
 
     def self.client_options(value=nil)

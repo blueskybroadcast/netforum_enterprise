@@ -6,8 +6,8 @@ require 'netforum_enterprise/version'
 Gem::Specification.new do |spec|
   spec.name          = "netforum_enterprise"
   spec.version       = NetforumEnterprise::VERSION
-  spec.authors       = ["Marc Villanueva"]
-  spec.email         = ["mvillanueva@blueskybroadcast.com"]
+  spec.authors       = ["Marc Villanueva", "Timm Liu"]
+  spec.email         = ["mvillanueva@blueskybroadcast.com", "tliu@blueskybroadcast.com"]
   spec.summary       = %q{Gem for interacting with Avectra's Netforum Enterprise API.}
   spec.description   = %q{Gem for interacting with Avectra's Netforum Enterprise API.}
   spec.homepage      = ""
