@@ -28,7 +28,7 @@ module NetforumEnterprise
       }, Product, { output_subname: 'price_merchandise_object' })
     end
 
-    def get_invoice_by_invoice_details_key(ivd_key)
+    def get_invoice_by_invoice_details_key(ivd_key:)
       get_object('get_query', {
         'szObjectName' => 'Invoice',
         'szColumnList' => 'inv_cst_key,ivd_key,ivd_add_date,ivd_prc_key,ivd_prc_prd_key',
@@ -41,29 +41,39 @@ module NetforumEnterprise
       get_array('web_centralized_shopping_cart_get_product_list', {}, Product)
     end
 
-    def get_purchased_events_by_customer(customer_key)
-      get_array('web_activity_get_purchased_events_by_customer', { 'CustomerKey' => customer_key }, Event)
+    def get_purchased_events_by_customer(cst_key:)
+      get_array('web_activity_get_purchased_events_by_customer', { 'CustomerKey' => cst_key }, Event)
     end
 
-    def get_purchased_products_by_customer(customer_key)
-      get_array('web_activity_get_purchased_products_by_customer', { 'CustomerKey' => customer_key }, Product)
+    def get_purchased_products_by_customer(cst_key:)
+      get_array('web_activity_get_purchased_products_by_customer', { 'CustomerKey' => cst_key }, Product)
     end
 
-    def get_registrant_events_by_reg_key(reg_key)
+    def get_registrant_events_by_reg_key(reg_key:)
       get_object('web_activity_get_registrant_events', { 'RegKey' => reg_key }, RegistrantEvent)
     end
 
-    def get_events_registrant_by_event_key(evt_key)
+    def get_events_registrant_by_event_key(evt_key:, cst_key: nil)
+      where_clause = cst_key ? "reg_cst_key='#{cst_key}' and reg_evt_key='#{evt_key}'" : "reg_evt_key='#{evt_key}'"
       get_array('get_query', {
         'szObjectName' => 'EventsRegistrant',
-        'szColumnList' => 'Registrant.reg_cst_key AS Registrant_reg_cst_key,Registrant.reg_evt_key AS Registrant_reg_evt_key,Registrant.reg_registration_date AS Registrant_reg_registration_date',
-        'szWhereClause' => "reg_evt_key='#{evt_key}'",
+        'szColumnList' => 'Registrant.reg_cst_key AS Registrant_reg_cst_key,Registrant.reg_evt_key AS Registrant_reg_evt_key,Registrant.reg_registration_date AS Registrant_reg_registration_date,CustomerInd.cst_id AS CustomerInd_cst_id',
+        'szWhereClause' => "#{where_clause}",
         'szOrderBy' => ''
       }, Registrant, { output_subname: 'events_registrant_object' })
     end
 
-    def get_user_by_cst_key(cst_key)
+    def get_user_by_cst_key(cst_key:)
       get_object('web_web_user_get', { 'cst_key' => cst_key }, User, { no_subname: true })
+    end
+
+    def write_event_completion(reg_key:, cst_key:, evt_key:, iso_datetime:)
+      get_object('update_facade_object', {
+        'szObjectName' => 'EventsRegistrant',
+        'szObjectKey' => "#{reg_key}",
+        'szWhereClause' => "reg_cst_key='#{cst_key}' and reg_evt_key='#{evt_key}'",
+        'oNode' => { 'EventsRegistrantObjects' => { 'EventsRegistrantObject' => { 'reg_lms_attended_date_ext' => "#{iso_datetime}" } } }
+      }, EventCompletionResponse, { output_subname: 'events_registrant_object' })
     end
 
     private
@@ -109,6 +119,10 @@ module NetforumEnterprise
       end
 
       return_list
+    rescue Savon::SOAPFault => error
+      fault_code = error.to_hash[:fault][:faultcode]
+      Rails.logger.error "!! NetforumEnterprise get_array error: #{fault_code}"
+      []
     end
 
     def get_object(service, params, klass, options={})
@@ -128,6 +142,10 @@ module NetforumEnterprise
       else
         nil
       end
+    rescue Savon::SOAPFault => error
+      fault_code = error.to_hash[:fault][:faultcode]
+      Rails.logger.error "!! NetforumEnterprise get_object error: #{fault_code}"
+      nil
     end
 
     def set_auth_token(response)
