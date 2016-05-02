@@ -11,20 +11,30 @@ require "netforum_enterprise/registrant"
 require "netforum_enterprise/user"
 
 module NetforumEnterprise
-  def self.configure(&block)
-    Configuration.class_eval(&block)
+  class << self
+    attr_accessor :configuration, :auth, :map
   end
 
-  def self.authenticate(username, password)
-    auth = Authentication.new(username, password)
-    if auth.authenticate
-      auth
-    else
-      nil
-    end
+  def self.configuration
+    @configuration ||= Configuration.new
   end
 
-  def self.map_products(authentication_token)
-    MapProducts.new(authentication_token)
+  def self.reset
+    @configuration = Configuration.new
+  end
+
+  def self.configure
+    yield configuration
+  end
+
+  def self.authenticate username, password
+    @auth = Authentication.new username, password
+    raise 'Unable to authenticate with Netforum Enterprise SOAP service.' unless @auth.authenticate
+    yield @auth
+  end
+
+  def self.map_products
+    @map = MapProducts.new @auth.authentication_token
+    yield @map
   end
 end

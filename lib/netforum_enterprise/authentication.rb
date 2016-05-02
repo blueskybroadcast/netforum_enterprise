@@ -43,23 +43,18 @@ module NetforumEnterprise
 
     private
 
-    def client(with_auth_token=true)
+    def client(with_auth_token = true)
       if with_auth_token
-        options = Configuration.client_options.merge(soap_header: { 'tns:AuthorizationToken' => { 'tns:Token' => @auth_token } })
+        options = NetforumEnterprise.configuration.client_options.merge(soap_header: { 'tns:AuthorizationToken' => { 'tns:Token' => @auth_token } })
       else
-        options = Configuration.client_options
+        options = NetforumEnterprise.configuration.client_options
       end
-
       Savon.client(options) do |globals|
-        globals.wsdl Configuration.wsdl
-        # globals.log true
-        # globals.logger Rails.logger
-        # globals.log_level :debug
-        # globals.pretty_print_xml true
+        globals.wsdl NetforumEnterprise.configuration.wsdl
       end
     end
 
-    def get_result(service, params, options={})
+    def get_result(service, params, options = {})
       begin
         response = client.call(service.to_sym, message: params)
         @auth_token = response.header[:authorization_token][:token] if response.header[:authorization_token][:token].length > 0

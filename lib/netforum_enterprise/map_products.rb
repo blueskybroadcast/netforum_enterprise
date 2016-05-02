@@ -63,6 +63,16 @@ module NetforumEnterprise
       }, Registrant, { output_subname: 'events_registrant_object' })
     end
 
+    def get_events_by_customer_key(cst_key:)
+      where_clause = "reg_cst_key='#{cst_key}'"
+      get_array('get_query', {
+        'szObjectName' => 'EventsRegistrant',
+        'szColumnList' => 'Registrant.reg_key AS Registrant_reg_key,Registrant.reg_cst_key AS Registrant_reg_cst_key,Registrant.reg_evt_key AS Registrant_reg_evt_key,Registrant.reg_registration_date AS Registrant_reg_registration_date',
+        'szWhereClause' => "#{where_clause}",
+        'szOrderBy' => ''
+      }, Registrant, { output_subname: 'events_registrant_object' })
+    end
+
     def get_user_by_cst_key(cst_key:)
       get_object('web_web_user_get', { 'cst_key' => cst_key }, User, { no_subname: true })
     end
@@ -79,17 +89,11 @@ module NetforumEnterprise
     private
 
     def client
-      options = Configuration.client_options.merge(soap_header: { 'tns:AuthorizationToken' => { 'tns:Token' => @authentication_token } })
-
+      raise 'Undefined global configuration option "wsdl". Use NetforumEnterprise.configure { |config| config.wsdl = "value" } to set this.' unless NetforumEnterprise.configuration.wsdl
+      options = NetforumEnterprise.configuration.client_options.merge(soap_header: { 'tns:AuthorizationToken' => { 'tns:Token' => @authentication_token } })
       Savon.client(options) do |globals|
-        globals.wsdl Configuration.wsdl
-        # globals.log true
-        # globals.logger Rails.logger
-        # globals.log_level :debug
-        # globals.pretty_print_xml true
-
-        # override endpoint address so http schemes match what is in WSDL
-        globals.endpoint Configuration.wsdl.gsub('?WSDL', '')
+        globals.wsdl NetforumEnterprise.configuration.wsdl
+        globals.endpoint NetforumEnterprise.configuration.wsdl.gsub('?WSDL', '')
       end
     end
 
