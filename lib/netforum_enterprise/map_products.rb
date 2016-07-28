@@ -10,20 +10,32 @@ module NetforumEnterprise
       get_array('web_centralized_shopping_cart_get_event_list', {}, Event)
     end
 
-    def get_full_event_list
+    def get_full_event_list(months_limit = nil)
+      where_clause = if months_limit
+        "evt_start_date > #{months_limit.to_i.months.ago.strftime('%Y-%m-01')}"
+      else
+        ''
+      end
+
       get_array('get_query', {
         'szObjectName' => 'Events @TOP -1',
-        'szColumnList' => 'evt_key,evt_title,prc_key,prc_price',
-        'szWhereClause' => '',
+        'szColumnList' => 'evt_key,evt_title,evt_code,evt_start_date,prc_key,prc_price',
+        'szWhereClause' => where_clause,
         'szOrderBy' => 'evt_title'
       }, Event, { output_subname: 'events_object' })
     end
 
-    def get_full_product_list
+    def get_full_product_list(months_limit = nil)
+      where_clause = if months_limit
+        "prd_start_date > #{months_limit.to_i.months.ago.strftime('%Y-%m-01')}"
+      else
+        ''
+      end
+
       get_array('get_query', {
         'szObjectName' => 'Price_Merchandise @TOP -1',
-        'szColumnList' => 'prc_price,prc_key,prd_key,prd_name',
-        'szWhereClause' => '',
+        'szColumnList' => 'prc_price,prc_key,prd_key,prd_name,prd_code,prd_start_date',
+        'szWhereClause' => where_clause,
         'szOrderBy' => 'prd_name'
       }, Product, { output_subname: 'price_merchandise_object' })
     end
