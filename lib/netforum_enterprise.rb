@@ -9,6 +9,7 @@ require "netforum_enterprise/product"
 require "netforum_enterprise/registrant_event"
 require "netforum_enterprise/registrant"
 require "netforum_enterprise/user"
+require "netforum_enterprise/committee"
 
 module NetforumEnterprise
   class << self

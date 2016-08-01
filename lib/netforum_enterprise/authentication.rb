@@ -32,6 +32,15 @@ module NetforumEnterprise
       end
     end
 
+    def get_customer_committees(customer_key)
+      get_array('get_query', {
+        'szObjectName' => 'Committee Participation - (eWeb) @TOP 10',
+        'szColumnList' => 'cst_key,cmt_key,cmt_code,cmt_name',
+        'szWhereClause' => "cst_key=#{customer_key}",
+        'szOrderBy' => ''
+      }, Committee, { output_subname: 'committee_participation_e_web_object' })
+    end
+
     def web_user_login(login, password)
       get_result('web_web_user_login', { 'LoginOrEmail' => login, 'password' => password })
     end
@@ -64,6 +73,36 @@ module NetforumEnterprise
           response.body["#{output_name}_response".to_sym]["#{output_name}_result".to_sym]
         else
           nil
+        end
+      rescue Savon::SOAPFault => _e
+        nil
+      end
+    end
+
+    def get_array(service, params, klass, options={})
+      begin
+        response = client.call(service.to_sym, message: params)
+        @auth_token = response.header[:authorization_token][:token] if response.header[:authorization_token][:token].length > 0
+
+        return_list = []
+        no_subname = options[:no_subname] || false
+        output_name = options[:output_name] || service
+        output_subname = options[:output_subname] || 'result'
+
+        if response.success? && response.body["#{output_name}_response".to_sym]["#{output_name}_result".to_sym]
+          if no_subname
+            results = response.body["#{output_name}_response".to_sym]["#{output_name}_result".to_sym] || []
+          else
+            results = response.body["#{output_name}_response".to_sym]["#{output_name}_result".to_sym][output_subname.pluralize.to_sym][output_subname.to_sym] || []
+          end
+
+          unless results.is_a?(Array)
+            results = [results]
+          end
+
+          results.each do |result|
+            return_list << klass.new(result)
+          end
         end
       rescue Savon::SOAPFault => _e
         nil
