@@ -36,7 +36,7 @@ module NetforumEnterprise
       get_array('get_query', {
         'szObjectName' => 'Committee Participation - (eWeb) @TOP 10',
         'szColumnList' => 'cst_key,cmt_key,cmt_code,cmt_name',
-        'szWhereClause' => "cst_key=#{customer_key}",
+        'szWhereClause' => "cst_key='#{customer_key}'",
         'szOrderBy' => ''
       }, Committee, { output_subname: 'committee_participation_e_web_object' })
     end
@@ -104,6 +104,7 @@ module NetforumEnterprise
             return_list << klass.new(result)
           end
         end
+        return_list
       rescue Savon::SOAPFault => _e
         nil
       end
