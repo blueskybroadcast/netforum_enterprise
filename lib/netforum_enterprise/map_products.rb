@@ -12,7 +12,7 @@ module NetforumEnterprise
 
     def get_full_event_list(months_limit = nil)
       where_clause = if months_limit
-        "evt_start_date > #{months_limit.to_i.months.ago.strftime('%Y-%m-01')}"
+        "evt_start_date > \'#{months_limit.to_i.months.ago.strftime('%Y-%m-01')}\'"
       else
         ''
       end
@@ -27,7 +27,7 @@ module NetforumEnterprise
 
     def get_full_product_list(months_limit = nil)
       where_clause = if months_limit
-        "prd_start_date > #{months_limit.to_i.months.ago.strftime('%Y-%m-01')}"
+        "prd_start_date > \'#{months_limit.to_i.months.ago.strftime('%Y-%m-01')}\'"
       else
         ''
       end
