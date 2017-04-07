@@ -65,11 +65,21 @@ module NetforumEnterprise
       get_object('web_activity_get_registrant_events', { 'RegKey' => reg_key }, RegistrantEvent)
     end
 
-    def get_events_registrant_by_event_key(evt_key:, cst_key: nil)
-      where_clause = cst_key ? "reg_cst_key='#{cst_key}' and reg_evt_key='#{evt_key}'" : "reg_evt_key='#{evt_key}'"
+    def get_events_registrant_by_event_key(evt_key:, cst_id: nil, cst_key: nil, naccho_client: false)
+      customer_object_name = if naccho_client
+                               'Customer'
+                             else
+                               'CustomerInd'
+                             end
+      where_clause = "reg_evt_key='#{evt_key}'"
+      where_clause << if cst_key
+                       " and reg_cst_key='#{cst_key}'"
+                     elsif cst_id
+                       " and cst_id='#{cst_id}'"
+                     end
       get_array('get_query', {
         'szObjectName' => 'EventsRegistrant',
-        'szColumnList' => 'Registrant.reg_cst_key AS Registrant_reg_cst_key,Registrant.reg_evt_key AS Registrant_reg_evt_key,Registrant.reg_registration_date AS Registrant_reg_registration_date,CustomerInd.cst_id AS CustomerInd_cst_id',
+        'szColumnList' => "Registrant.reg_cst_key AS Registrant_reg_cst_key,Registrant.reg_evt_key AS Registrant_reg_evt_key,Registrant.reg_registration_date AS Registrant_reg_registration_date,#{customer_object_name}.cst_id AS CustomerInd_cst_id",
         'szWhereClause' => "#{where_clause}",
         'szOrderBy' => ''
       }, Registrant, { output_subname: 'events_registrant_object' })
@@ -96,6 +106,22 @@ module NetforumEnterprise
         'szWhereClause' => "reg_cst_key='#{cst_key}' and reg_evt_key='#{evt_key}'",
         'oNode' => { 'EventsRegistrantObjects' => { 'EventsRegistrantObject' => { 'reg_lms_attended_date_ext' => "#{iso_datetime}" } } }
       }, EventCompletionResponse, { output_subname: 'events_registrant_object' })
+    end
+
+    def write_certificate_completion(cst_key:, evt_key:, date_string:, credit_value:)
+      get_object('execute_method', {
+        'serviceName' => 'NACCHOWebServices',
+        'methodName' => 'BSBUpdateCourseCompletion',
+        'parameters' => {
+          'Parameter' => [
+            { 'Name' => 'CustomerKey', 'Value' => "#{cst_key}" },
+            { 'Name' => 'EventKey', 'Value' => "#{evt_key}" },
+            { 'Name' => 'Result', 'Value' => 'Pass' },
+            { 'Name' => 'CompletionDate', 'Value' => "#{date_string}" },
+            { 'Name' => 'Credit', 'Value' => "#{credit_value}" }
+          ]
+        }
+      }, CertificateCompletionResponse, { no_subname: true })
     end
 
     private
