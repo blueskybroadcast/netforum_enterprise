@@ -49,6 +49,15 @@ module NetforumEnterprise
       }, Invoice, { output_subname: 'invoice_object' })
     end
 
+    def get_invoices_by_invoice_details_keys(ivd_keys:)
+      get_object('get_query', {
+        'szObjectName' => 'Invoice',
+        'szColumnList' => 'inv_cst_key,ivd_key,ivd_add_date,ivd_prc_key,ivd_prc_prd_key',
+        'szWhereClause' => "ivd_key IN (#{ivd_keys})",
+        'szOrderBy' => ''
+      }, Invoice, { output_subname: 'invoice_object' })
+    end
+
     def get_product_list
       get_array('web_centralized_shopping_cart_get_product_list', {}, Product)
     end
