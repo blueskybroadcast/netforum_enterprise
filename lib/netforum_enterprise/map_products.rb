@@ -49,11 +49,11 @@ module NetforumEnterprise
       }, Invoice, { output_subname: 'invoice_object' })
     end
 
-    def get_invoices_by_invoice_details_keys(ivd_keys:)
-      get_object('get_query', {
+    def get_invoice_array_by_invoice_details_keys(products_with_ivd_key:)
+      get_array('get_query', {
         'szObjectName' => 'Invoice',
         'szColumnList' => 'inv_cst_key,ivd_key,ivd_add_date,ivd_prc_key,ivd_prc_prd_key',
-        'szWhereClause' => "ivd_key IN (#{ivd_keys})",
+        'szWhereClause' => "ivd_key IN (#{ivd_key_list(products_with_ivd_key)})",
         'szOrderBy' => ''
       }, Invoice, { output_subname: 'invoice_object' })
     end
@@ -116,6 +116,10 @@ module NetforumEnterprise
         globals.wsdl NetforumEnterprise.configuration.wsdl
         globals.endpoint NetforumEnterprise.configuration.wsdl.gsub('?WSDL', '')
       end
+    end
+
+    def ivd_key_list products_with_ivd_key
+      "'"+products_with_ivd_key.map { |m| m[:ivd_key] }.join("','")+"'"
     end
 
     def get_array(service, params, klass, options={})
