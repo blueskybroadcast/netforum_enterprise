@@ -118,8 +118,8 @@ module NetforumEnterprise
       end
     end
 
-    def ivd_key_list products_with_ivd_key
-      "'"+products_with_ivd_key.map { |m| m[:ivd_key] }.join("','")+"'"
+    def ivd_key_list(products_with_ivd_key)
+      "'" + products_with_ivd_key.map { |m| m[:ivd_key] }.join("','") + "'"
     end
 
     def get_array(service, params, klass, options={})
