@@ -1,3 +1,4 @@
+require 'bundler/setup'
 require 'netforum_enterprise'
 require 'minitest/autorun'
 require 'minitest/pride'

@@ -1,13 +1,16 @@
+$LOAD_PATH.unshift(File.expand_path(File.dirname(File.dirname(__FILE__))) + '/test')
 require 'test_helper'
 
 class AuthenticationTest < MiniTest::Test
   def setup
     stub_wsdl
+    NetforumEnterprise.configure do |config|
+      config.wsdl = 'https://eweb.foodexport.org/nffoodextest/xweb/secure/netForumXML.asmx?WSDL'
+    end
   end
 
   def test_authenticate_success
     stub_login
-
     service = NetforumEnterprise::Authentication.new('user', 'abc')
     assert_equal true, service.authenticate
   end
