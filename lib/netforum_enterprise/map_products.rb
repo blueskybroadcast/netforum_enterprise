@@ -85,6 +85,8 @@ module NetforumEnterprise
                        " and reg_cst_key='#{cst_key}'"
                      elsif cst_id
                        " and cst_id='#{cst_id}'"
+                     else
+                       ''
                      end
       get_array('get_query', {
         'szObjectName' => 'EventsRegistrant',
