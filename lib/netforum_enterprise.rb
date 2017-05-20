@@ -11,32 +11,13 @@ require "netforum_enterprise/registrant_event"
 require "netforum_enterprise/registrant"
 require "netforum_enterprise/user"
 require "netforum_enterprise/committee"
+require "netforum_enterprise/client"
 
 module NetforumEnterprise
-  class << self
-    attr_accessor :configuration, :auth, :map
-  end
-
-  def self.configuration
-    @configuration ||= Configuration.new
-  end
-
-  def self.reset
-    @configuration = Configuration.new
-  end
-
   def self.configure
-    yield configuration
-  end
-
-  def self.authenticate username, password
-    @auth = Authentication.new username, password
-    raise 'Unable to authenticate with Netforum Enterprise SOAP service.' unless @auth.authenticate
-    yield @auth
-  end
-
-  def self.map_products
-    @map = MapProducts.new @auth.authentication_token
-    yield @map
+    client = Client.new
+    client.configuration = Configuration.new
+    yield client.configuration
+    client
   end
 end

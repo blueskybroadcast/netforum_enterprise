@@ -5,10 +5,11 @@ module NetforumEnterprise
   class Authentication
     INVALID_CUSTOMER_KEY = '00000000-0000-0000-0000-000000000000'
 
-    def initialize(username, password)
+    def initialize(username, password, configuration)
       @auth_token = nil
       @username = username
       @password = password
+      @configuration = configuration
     end
 
     def authenticate
@@ -54,12 +55,12 @@ module NetforumEnterprise
 
     def client(with_auth_token = true)
       if with_auth_token
-        options = NetforumEnterprise.configuration.client_options.merge(soap_header: { 'tns:AuthorizationToken' => { 'tns:Token' => @auth_token } })
+        options = @configuration.client_options.merge(soap_header: { 'tns:AuthorizationToken' => { 'tns:Token' => @auth_token } })
       else
-        options = NetforumEnterprise.configuration.client_options
+        options = @configuration.client_options
       end
       Savon.client(options) do |globals|
-        globals.wsdl NetforumEnterprise.configuration.wsdl
+        globals.wsdl @configuration.wsdl
       end
     end
 

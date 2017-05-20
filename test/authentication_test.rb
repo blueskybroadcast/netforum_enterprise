@@ -4,21 +4,22 @@ require 'test_helper'
 class AuthenticationTest < MiniTest::Test
   def setup
     stub_wsdl
-    NetforumEnterprise.configure do |config|
+    client = NetforumEnterprise.configure do |config|
       config.wsdl = 'https://eweb.foodexport.org/nffoodextest/xweb/secure/netForumXML.asmx?WSDL'
     end
+    @configuration = client.configuration
   end
 
   def test_authenticate_success
     stub_login
-    service = NetforumEnterprise::Authentication.new('user', 'abc')
+    service = NetforumEnterprise::Authentication.new('user', 'abc', @configuration)
     assert_equal true, service.authenticate
   end
 
   def test_authenticate_failure
     stub_login_failure
 
-    service = NetforumEnterprise::Authentication.new('user', 'abc')
+    service = NetforumEnterprise::Authentication.new('user', 'abc', @configuration)
     assert_equal false, service.authenticate
   end
 
@@ -26,7 +27,7 @@ class AuthenticationTest < MiniTest::Test
     stub_login
     stub_web_user_login
 
-    service = NetforumEnterprise::Authentication.new('user', 'abc')
+    service = NetforumEnterprise::Authentication.new('user', 'abc', @configuration)
     info = service.web_user_login('user2', '123')
 
     assert_equal true, !info.nil?
@@ -36,7 +37,7 @@ class AuthenticationTest < MiniTest::Test
     stub_login
     stub_web_user_login_failure
 
-    service = NetforumEnterprise::Authentication.new('user', 'abc')
+    service = NetforumEnterprise::Authentication.new('user', 'abc', @configuration)
     info = service.web_user_login('user2', '123')
 
     assert_equal true, info.nil?
@@ -46,7 +47,7 @@ class AuthenticationTest < MiniTest::Test
     stub_login
     stub_web_validate
 
-    service = NetforumEnterprise::Authentication.new('user', 'abc')
+    service = NetforumEnterprise::Authentication.new('user', 'abc', @configuration)
     customer_key = service.web_validate('123')
 
     assert_equal true, !customer_key.nil?
@@ -56,7 +57,7 @@ class AuthenticationTest < MiniTest::Test
     stub_login
     stub_web_validate_failure
 
-    service = NetforumEnterprise::Authentication.new('user', 'abc')
+    service = NetforumEnterprise::Authentication.new('user', 'abc', @configuration)
     customer_key = service.web_validate('123')
 
     assert_equal true, customer_key.nil?
@@ -66,7 +67,7 @@ class AuthenticationTest < MiniTest::Test
     stub_login
     stub_get_individual_information
 
-    service = NetforumEnterprise::Authentication.new('user', 'abc')
+    service = NetforumEnterprise::Authentication.new('user', 'abc', @configuration)
     info = service.get_individual_information('123')
 
     assert_equal true, !info.nil?
@@ -76,7 +77,7 @@ class AuthenticationTest < MiniTest::Test
     stub_login
     stub_get_individual_information_failure
 
-    service = NetforumEnterprise::Authentication.new('user', 'abc')
+    service = NetforumEnterprise::Authentication.new('user', 'abc', @configuration)
     info = service.get_individual_information('123')
 
     assert_equal true, info.nil?

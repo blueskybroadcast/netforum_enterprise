@@ -2,8 +2,9 @@ module NetforumEnterprise
   class MapProducts
     attr_reader :authentication_token
 
-    def initialize(authentication_token)
+    def initialize(authentication_token, configuration)
       @authentication_token = authentication_token
+      @configuration = configuration
     end
 
     def get_event_list
@@ -138,11 +139,11 @@ module NetforumEnterprise
     private
 
     def client
-      raise 'Undefined global configuration option "wsdl". Use NetforumEnterprise.configure { |config| config.wsdl = "value" } to set this.' unless NetforumEnterprise.configuration.wsdl
-      options = NetforumEnterprise.configuration.client_options.merge(soap_header: { 'tns:AuthorizationToken' => { 'tns:Token' => @authentication_token } })
+      raise 'Undefined global configuration option "wsdl". Use NetforumEnterprise.configure { |config| config.wsdl = "value" } to set this.' unless @configuration.wsdl
+      options = @configuration.client_options.merge(soap_header: { 'tns:AuthorizationToken' => { 'tns:Token' => @authentication_token } })
       Savon.client(options) do |globals|
-        globals.wsdl NetforumEnterprise.configuration.wsdl
-        globals.endpoint NetforumEnterprise.configuration.wsdl.gsub('?WSDL', '')
+        globals.wsdl @configuration.wsdl
+        globals.endpoint @configuration.wsdl.gsub('?WSDL', '')
       end
     end
 
