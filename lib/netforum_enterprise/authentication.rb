@@ -5,6 +5,8 @@ module NetforumEnterprise
   class Authentication
     INVALID_CUSTOMER_KEY = '00000000-0000-0000-0000-000000000000'
 
+    attr_reader :last_request, :last_response
+
     def initialize(username, password, configuration)
       @auth_token = nil
       @username = username
@@ -14,10 +16,15 @@ module NetforumEnterprise
 
     def authenticate
       begin
-        response = client(false).call(:authenticate, message: { 'userName' => @username, 'password' => @password })
+        operation = client(false).operation(:authenticate)
+        response = operation.call(message: { 'userName' => @username, 'password' => @password })
+        @last_request = operation.raw_request
+        @last_response = operation.raw_response
         @auth_token = response.header[:authorization_token][:token] if response.header[:authorization_token][:token].length > 0
         true
-      rescue Savon::SOAPFault => _e
+      rescue Savon::SOAPFault => e
+        @last_request ||= operation.raw_request
+        @last_response = e.http
         @auth_token = nil
         false
       end
@@ -66,7 +73,10 @@ module NetforumEnterprise
 
     def get_result(service, params, options = {})
       begin
-        response = client.call(service.to_sym, message: params)
+        operation = client.operation(service.to_sym,)
+        response = operation.call(message: params)
+        @last_request = operation.raw_request
+        @last_response = operation.raw_response
         @auth_token = response.header[:authorization_token][:token] if response.header[:authorization_token][:token].length > 0
         output_name = options[:output_name] || service
 
@@ -75,14 +85,19 @@ module NetforumEnterprise
         else
           nil
         end
-      rescue Savon::SOAPFault => _e
+      rescue Savon::SOAPFault => e
+        @last_request ||= operation.raw_request
+        @last_response = e.http
         nil
       end
     end
 
     def get_array(service, params, klass, options={})
       begin
-        response = client.call(service.to_sym, message: params)
+        operation = client.operation(service.to_sym)
+        response = operation.call(message: params)
+        @last_request = operation.raw_request
+        @last_response = operation.raw_response
         @auth_token = response.header[:authorization_token][:token] if response.header[:authorization_token][:token].length > 0
 
         return_list = []
@@ -106,7 +121,9 @@ module NetforumEnterprise
           end
         end
         return_list
-      rescue Savon::SOAPFault => _e
+      rescue Savon::SOAPFault => e
+        @last_request ||= operation.raw_request
+        @last_response = e.http
         nil
       end
     end

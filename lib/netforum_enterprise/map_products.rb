@@ -1,6 +1,6 @@
 module NetforumEnterprise
   class MapProducts
-    attr_reader :authentication_token
+    attr_reader :authentication_token, :last_request, :last_response
 
     def initialize(authentication_token, configuration)
       @authentication_token = authentication_token
@@ -155,7 +155,10 @@ module NetforumEnterprise
     end
 
     def get_array(service, params, klass, options={})
-      response = client.call(service.to_sym, message: params)
+      operation = client.operation(service.to_sym)
+      response = operation.call(message: params)
+      @last_request = operation.raw_request
+      @last_response = operation.raw_response
       set_auth_token(response)
 
       return_list = []
@@ -181,13 +184,18 @@ module NetforumEnterprise
 
       return_list
     rescue Savon::SOAPFault => error
+      @last_request ||= operation.raw_request
+      @last_response = error.http
       fault_code = error.to_hash[:fault][:faultcode]
       Rails.logger.error "!! NetforumEnterprise get_array error: #{fault_code}"
       []
     end
 
     def get_object(service, params, klass, options={})
-      response = client.call(service.to_sym, message: params)
+      operation = client.operation(service.to_sym)
+      response = operation.call(message: params)
+      @last_request = operation.raw_request
+      @last_response = operation.raw_response
       set_auth_token(response)
 
       no_subname = options[:no_subname] || false
@@ -204,6 +212,8 @@ module NetforumEnterprise
         nil
       end
     rescue Savon::SOAPFault => error
+      @last_request ||= operation.raw_request
+      @last_response = error.http
       fault_code = error.to_hash[:fault][:faultcode]
       Rails.logger.error "!! NetforumEnterprise get_object error: #{fault_code}"
       nil
