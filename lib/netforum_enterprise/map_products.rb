@@ -11,16 +11,19 @@ module NetforumEnterprise
       get_array('web_centralized_shopping_cart_get_event_list', {}, Event)
     end
 
-    def get_full_event_list(months_limit = nil)
+    def get_full_event_list(months_limit = nil, include_prc_columns = false)
       where_clause = if months_limit
         "evt_start_date > \'#{months_limit.to_i.months.ago.strftime('%Y-%m-01')}\'"
       else
         ''
       end
 
+      column_list = 'evt_key,evt_title,evt_code,evt_start_date'
+      column_list << ',prc_key,prc_price' if include_prc_columns
+
       get_array('get_query', {
         'szObjectName' => 'Events @TOP -1',
-        'szColumnList' => 'evt_key,evt_title,evt_code,evt_start_date,prc_key,prc_price',
+        'szColumnList' => column_list,
         'szWhereClause' => where_clause,
         'szOrderBy' => 'evt_title'
       }, Event, { output_subname: 'events_object' })
