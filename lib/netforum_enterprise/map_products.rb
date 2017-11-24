@@ -139,6 +139,34 @@ module NetforumEnterprise
       }, CertificateCompletionResponse, { no_subname: true })
     end
 
+    def write_apdt_course_purchase(uid:, path_course_id:, path_course_name:, purchase_date:)
+      start_date = purchase_date.strftime('%d/%m/%Y')
+      end_date = (purchase_date + 1.year).strftime('%d/%m/%Y')
+
+      get_object('insert_facade_object', {
+        'szObjectName' => 'ADPTLMSCourse',
+        'oNode' => {
+          'APDTLMSCourses' => {
+            'APDTLMSCourse' => {
+              'a07_cst_key' => uid.to_s,
+              'a07_course_ID' => path_course_id.to_s,
+              'a07_course_description' => path_course_name.to_s,
+              'a07_start_date' => start_date,
+              'a07_end_date' => end_date
+            }
+          }
+        }
+      }, CoursePurchaseResponse, { output_subname: 'apdtlms_course_object' })
+    end
+
+    def write_apdt_course_revoke(purchase_key:)
+      get_object('update_facade_object', {
+        'szObjectName' => 'APDTLMSCourse',
+        'szObjectKey' => "#{purchase_key}",
+        'oNode' => { 'APDTLMSCourses' => { 'APDTLMSCourse' => { 'a07_delete_flag' => '1' } } }
+      }, CourseRevokeResponse, { output_subname: 'apdtlms_course_object' })
+    end
+
     private
 
     def client
