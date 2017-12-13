@@ -140,11 +140,11 @@ module NetforumEnterprise
     end
 
     def write_apdt_course_purchase(uid:, path_course_id:, path_course_name:, purchase_date:)
-      start_date = purchase_date.strftime('%d/%m/%Y')
-      end_date = (purchase_date + 1.year).strftime('%d/%m/%Y')
+      start_date = purchase_date.strftime('%m/%d/%Y')
+      end_date = (purchase_date + 1.year).strftime('%m/%d/%Y')
 
       get_object('insert_facade_object', {
-        'szObjectName' => 'ADPTLMSCourse',
+        'szObjectName' => 'APDTLMSCourse',
         'oNode' => {
           'APDTLMSCourses' => {
             'APDTLMSCourse' => {
