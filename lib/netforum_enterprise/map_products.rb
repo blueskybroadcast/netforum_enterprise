@@ -11,7 +11,7 @@ module NetforumEnterprise
       get_array('web_centralized_shopping_cart_get_event_list', {}, Event)
     end
 
-    def get_full_event_list(months_limit = nil, include_prc_columns = false)
+    def get_full_event_list(months_limit = nil, exclude_prc_columns = true)
       where_clause = if months_limit
         "evt_start_date > \'#{months_limit.to_i.months.ago.strftime('%Y-%m-01')}\'"
       else
@@ -19,7 +19,7 @@ module NetforumEnterprise
       end
 
       column_list = 'evt_key,evt_title,evt_code,evt_start_date'
-      column_list << ',prc_key,prc_price' if include_prc_columns
+      column_list << ',prc_key,prc_price' unless exclude_prc_columns
 
       get_array('get_query', {
         'szObjectName' => 'Events @TOP -1',
@@ -62,6 +62,15 @@ module NetforumEnterprise
       }, Invoice, { output_subname: 'invoice_object' })
     end
 
+    def get_invoice_details_by_cst_key(cst_key:)
+      get_array('get_query', {
+        'szObjectName' => 'InvoiceDetail',
+        'szColumnList' => 'ivd_key,ivd_add_date,ivd_prc_key,ivd_prc_prd_key,ivd_price',
+        'szWhereClause' => "cst_key='#{cst_key}'",
+        'szOrderBy' => ''
+      }, InvoiceDetail, { output_subname: 'invoice_detail_object' })
+    end
+
     def get_product_list
       get_array('web_centralized_shopping_cart_get_product_list', {}, Product)
     end
@@ -78,23 +87,18 @@ module NetforumEnterprise
       get_object('web_activity_get_registrant_events', { 'RegKey' => reg_key }, RegistrantEvent)
     end
 
-    def get_events_registrant_by_event_key(evt_key:, cst_id: nil, cst_key: nil, naccho_client: false)
-      customer_object_name = if naccho_client
-                               'Customer'
-                             else
-                               'CustomerInd'
-                             end
+    def get_events_registrant_by_event_key(evt_key:, cst_id: nil, cst_key: nil)
       where_clause = "reg_evt_key='#{evt_key}'"
       where_clause << if cst_key
-                       " and reg_cst_key='#{cst_key}'"
-                     elsif cst_id
-                       " and cst_id='#{cst_id}'"
-                     else
-                       ''
-                     end
+                        " and reg_cst_key='#{cst_key}'"
+                      elsif cst_id
+                        " and cst_id='#{cst_id}'"
+                      else
+                        ''
+                      end
       get_array('get_query', {
         'szObjectName' => 'EventsRegistrant',
-        'szColumnList' => "Registrant.reg_cst_key AS Registrant_reg_cst_key,Registrant.reg_evt_key AS Registrant_reg_evt_key,Registrant.reg_registration_date AS Registrant_reg_registration_date,#{customer_object_name}.cst_id AS CustomerInd_cst_id",
+        'szColumnList' => "cst_id,Registrant.reg_cst_key AS Registrant_reg_cst_key,Registrant.reg_evt_key AS Registrant_reg_evt_key,Registrant.reg_registration_date AS Registrant_reg_registration_date",
         'szWhereClause' => "#{where_clause}",
         'szOrderBy' => ''
       }, Registrant, { output_subname: 'events_registrant_object' })
