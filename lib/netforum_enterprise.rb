@@ -15,6 +15,7 @@ require 'netforum_enterprise/committee'
 require 'netforum_enterprise/client'
 require 'netforum_enterprise/course_purchase_response'
 require 'netforum_enterprise/course_revoke_response'
+require 'netforum_enterprise/ceu_credit_response'
 
 module NetforumEnterprise
   def self.configure

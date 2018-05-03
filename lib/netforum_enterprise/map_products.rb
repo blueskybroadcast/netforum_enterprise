@@ -171,6 +171,28 @@ module NetforumEnterprise
       }, CourseRevokeResponse, { output_subname: 'apdtlms_course_object' })
     end
 
+    def write_ceu_credit_earned(user_cst_key:, path_external_id:, credits_earned:, earned_date:, ceu_delete_flag:, ceu_cet_key:)
+      writeback_time = Time.now.utc.strftime('%m/%d/%Y')
+      ceu_earned_date = earned_date.strftime('%m/%d/%Y')
+
+      get_object('insert_facade_object', {
+        'szObjectName' => 'CEUCredit',
+        'oNode' => {
+          'CEUCredits' => {
+            'CEUCredit' => {
+              'ceu_ind_cst_key' => user_cst_key,
+              'ceu_ece_key' => path_external_id,
+              'ceu_credit' => credits_earned.to_s,
+              'ceu_add_date' => writeback_time,
+              'ceu_earned_date' => ceu_earned_date,
+              'ceu_delete_flag' => ceu_delete_flag,
+              'ceu_cet_key' => ceu_cet_key
+            }
+          }
+        }
+      }, CeuCreditResponse, { output_subname: 'ceu_credit_object' })
+    end
+
     private
 
     def client
