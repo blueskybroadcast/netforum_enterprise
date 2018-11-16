@@ -1,6 +1,6 @@
 require 'hashie'
 
 module NetforumEnterprise
-  class CertificateCompletionResponse < Hashie::Mash
+  class StandardResponse < Hashie::Mash
   end
 end

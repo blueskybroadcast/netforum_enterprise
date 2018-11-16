@@ -124,7 +124,7 @@ module NetforumEnterprise
         'szObjectKey' => "#{reg_key}",
         'szWhereClause' => "reg_cst_key='#{cst_key}' and reg_evt_key='#{evt_key}'",
         'oNode' => { 'EventsRegistrantObjects' => { 'EventsRegistrantObject' => { 'reg_lms_attended_date_ext' => "#{iso_datetime}" } } }
-      }, EventCompletionResponse, { output_subname: 'events_registrant_object' })
+      }, StandardResponse, { output_subname: 'events_registrant_object' })
     end
 
     def write_certificate_completion(cst_key:, evt_key:, date_string:, credit_value:)
@@ -140,7 +140,7 @@ module NetforumEnterprise
             { 'Name' => 'Credit', 'Value' => "#{credit_value}" }
           ]
         }
-      }, CertificateCompletionResponse, { no_subname: true })
+      }, StandardResponse, { no_subname: true })
     end
 
     def write_apdt_course_purchase(uid:, path_course_id:, path_course_name:, purchase_date:)
@@ -160,7 +160,7 @@ module NetforumEnterprise
             }
           }
         }
-      }, CoursePurchaseResponse, { output_subname: 'apdtlms_course_object' })
+      }, StandardResponse, { output_subname: 'apdtlms_course_object' })
     end
 
     def write_apdt_course_revoke(purchase_key:)
@@ -168,7 +168,7 @@ module NetforumEnterprise
         'szObjectName' => 'APDTLMSCourse',
         'szObjectKey' => "#{purchase_key}",
         'oNode' => { 'APDTLMSCourses' => { 'APDTLMSCourse' => { 'a07_delete_flag' => '1' } } }
-      }, CourseRevokeResponse, { output_subname: 'apdtlms_course_object' })
+      }, StandardResponse, { output_subname: 'apdtlms_course_object' })
     end
 
     def write_ceu_credit_earned(user_cst_key:, path_external_id:, credits_earned:, earned_date:, ceu_delete_flag:, ceu_cet_key:)
@@ -190,7 +190,27 @@ module NetforumEnterprise
             }
           }
         }
-      }, CeuCreditResponse, { output_subname: 'ceu_credit_object' })
+      }, StandardResponse, { output_subname: 'ceu_credit_object' })
+    end
+
+    def write_self_report_credit(user_cst_key:, course_name:, credits_earned:, earned_date:, sce_cet_key:, sce_status:, sce_program:)
+      earned_date_string = earned_date.strftime('%m/%d/%Y')
+      get_object('insert_facade_object', {
+        'szObjectName' => 'SelfReportCredit',
+        'oNode' => {
+          'SelfReportCreditObjects' => {
+            'SelfReportCreditObject' => {
+              'sce_credit' => credits_earned,
+              'sce_program' => sce_program,
+              'sce_course' => course_name,
+              'sce_cet_key' => sce_cet_key,
+              'sce_ind_cst_key' => user_cst_key,
+              'sce_activity_date' => earned_date_string,
+              'sce_status' => sce_status
+            }
+          }
+        }
+      }, StandardResponse, { output_subname: 'self_report_credit_object' })
     end
 
     private
