@@ -49,6 +49,11 @@ module NetforumEnterprise
       }, Committee, { output_subname: 'committee_participation_e_web_object' })
     end
 
+    def get_member_type_codes(customer_key)
+      get_array('web_activity_get_purchased_memberships_by_customer',
+                { 'CustomerKey' => customer_key, }, Committee)
+    end
+
     def web_user_login(login, password)
       get_result('web_web_user_login', { 'LoginOrEmail' => login, 'password' => password })
     end
@@ -105,11 +110,13 @@ module NetforumEnterprise
         output_name = options[:output_name] || service
         output_subname = options[:output_subname] || 'result'
 
-        if response.success? && response.body["#{output_name}_response".to_sym]["#{output_name}_result".to_sym]
-          if no_subname
-            results = response.body["#{output_name}_response".to_sym]["#{output_name}_result".to_sym] || []
-          else
-            results = response.body["#{output_name}_response".to_sym]["#{output_name}_result".to_sym][output_subname.pluralize.to_sym][output_subname.to_sym] || []
+        if response.success?
+          if response.body["#{output_name}_response".to_sym]["#{output_name}_result".to_sym]
+            if no_subname
+              results = response.body["#{output_name}_response".to_sym]["#{output_name}_result".to_sym] || []
+            else
+              results = response.body["#{output_name}_response".to_sym]["#{output_name}_result".to_sym][output_subname.pluralize.to_sym][output_subname.to_sym] || []
+            end
           end
 
           unless results.is_a?(Array)
