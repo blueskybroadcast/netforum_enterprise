@@ -87,7 +87,7 @@ module NetforumEnterprise
       get_object('web_activity_get_registrant_events', { 'RegKey' => reg_key }, RegistrantEvent)
     end
 
-    def get_events_registrant_by_event_key(evt_key:, cst_id: nil, cst_key: nil)
+    def get_events_registrant_by_event_key(evt_key:, cst_id: nil, cst_key: nil, return_list: nil, search_for_actual_events: false)
       where_clause = "reg_evt_key='#{evt_key}'"
       where_clause << if cst_key
                         " and reg_cst_key='#{cst_key}'"
@@ -96,9 +96,10 @@ module NetforumEnterprise
                       else
                         ''
                       end
+      where_clause << " and reg_cancel_date is null and reg_delete_flag='0'" if search_for_actual_events
       get_array('get_query', {
         'szObjectName' => 'EventsRegistrant',
-        'szColumnList' => "cst_id,Registrant.reg_cst_key AS Registrant_reg_cst_key,Registrant.reg_evt_key AS Registrant_reg_evt_key,Registrant.reg_registration_date AS Registrant_reg_registration_date",
+        'szColumnList' => return_list || "cst_id,Registrant.reg_cst_key AS Registrant_reg_cst_key,Registrant.reg_evt_key AS Registrant_reg_evt_key,Registrant.reg_registration_date AS Registrant_reg_registration_date",
         'szWhereClause' => "#{where_clause}",
         'szOrderBy' => ''
       }, Registrant, { output_subname: 'events_registrant_object' })
@@ -211,6 +212,19 @@ module NetforumEnterprise
           }
         }
       }, StandardResponse, { output_subname: 'self_report_credit_object' })
+    end
+
+    def write_event_registrant_attendance(user_cst_key: , reg_key: , grade: , completion_date:)
+      completion_date_string = completion_date.strftime('%Y-%m-%d')
+      get_object('update_facade_object', {
+        'szObjectName' => 'EventsRegistrant',
+        'oNode' => { 'EventsRegistrant' => { 'Registrant' => {
+          'reg_key' => reg_key,
+          'reg_cst_key' => user_cst_key,
+          'reg_grade_ext' => grade,
+          'reg_completion_date_ext' => completion_date_string
+        } } }
+      }, StandardResponse, { output_subname: 'events_registrant_object' })
     end
 
     private
