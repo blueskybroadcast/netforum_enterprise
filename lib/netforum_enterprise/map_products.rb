@@ -215,7 +215,7 @@ module NetforumEnterprise
     end
 
     def write_event_registrant_attendance(user_cst_key: , reg_key: , grade: , completion_date:)
-      completion_date_string = completion_date.strftime('%Y-%m-%dT%H:%M:%S:%z')
+      completion_date_string = completion_date.strftime('%Y-%m-%d')
       get_object('update_facade_object', {
         'szObjectName' => 'EventsRegistrant',
         'oNode' => { 'EventsRegistrant' => { 'Registrant' => {
