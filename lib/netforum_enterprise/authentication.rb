@@ -42,11 +42,11 @@ module NetforumEnterprise
 
     def get_customer_committees(customer_key)
       get_array('get_query', {
-        'szObjectName' => 'Committee Participation - (eWeb) @TOP 10',
+        'szObjectName' => 'Committee',
         'szColumnList' => 'cst_key,cmt_key,cmt_code,cmt_name',
         'szWhereClause' => "cst_key='#{customer_key}'",
         'szOrderBy' => ''
-      }, Committee, { output_subname: 'committee_participation_e_web_object' })
+      }, Committee, { output_subnames: %w(committee_participation_e_web_object committees_object committee_object) })
     end
 
     def get_member_type_codes(customer_key)
@@ -109,11 +109,16 @@ module NetforumEnterprise
         no_subname = options[:no_subname] || false
         output_name = options[:output_name] || service
         output_subname = options[:output_subname] || 'result'
+        output_subnames = options[:output_subnames]
 
         if response.success?
           if response.body["#{output_name}_response".to_sym]["#{output_name}_result".to_sym]
             if no_subname
               results = response.body["#{output_name}_response".to_sym]["#{output_name}_result".to_sym] || []
+            elsif output_subnames.present?
+              results = output_subnames.map do |subname|
+                response.body["#{output_name}_response".to_sym]["#{output_name}_result".to_sym][subname.pluralize.to_sym][subname.to_sym] || []
+              end.reject(&:blank?).first
             else
               results = response.body["#{output_name}_response".to_sym]["#{output_name}_result".to_sym][output_subname.pluralize.to_sym][output_subname.to_sym] || []
             end
