@@ -117,8 +117,8 @@ module NetforumEnterprise
               results = response.body["#{output_name}_response".to_sym]["#{output_name}_result".to_sym] || []
             elsif output_subnames.present?
               results = output_subnames.map do |subname|
-                response.body["#{output_name}_response".to_sym]["#{output_name}_result".to_sym][subname.pluralize.to_sym][subname.to_sym] || []
-              end.reject(&:blank?).first
+                response.body.dig("#{output_name}_response".to_sym, "#{output_name}_result".to_sym, subname.pluralize.to_sym, subname.to_sym)
+              end.reject(&:blank?).first || []
             else
               results = response.body["#{output_name}_response".to_sym]["#{output_name}_result".to_sym][output_subname.pluralize.to_sym][output_subname.to_sym] || []
             end
