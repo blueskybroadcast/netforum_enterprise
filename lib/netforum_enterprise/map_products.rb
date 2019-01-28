@@ -144,10 +144,7 @@ module NetforumEnterprise
       }, StandardResponse, { no_subname: true })
     end
 
-    def write_apdt_course_purchase(uid:, path_course_id:, path_course_name:, purchase_date:)
-      start_date = purchase_date.strftime('%m/%d/%Y')
-      end_date = (purchase_date + 1.year).strftime('%m/%d/%Y')
-
+    def write_apdt_course_purchase(uid:, path_course_id:, path_course_name:, start_date:, end_date:)
       get_object('insert_facade_object', {
         'szObjectName' => 'APDTLMSCourse',
         'oNode' => {
@@ -172,10 +169,7 @@ module NetforumEnterprise
       }, StandardResponse, { output_subname: 'apdtlms_course_object' })
     end
 
-    def write_ceu_credit_earned(user_cst_key:, path_external_id:, credits_earned:, earned_date:, ceu_delete_flag:, ceu_cet_key:)
-      writeback_time = Time.now.utc.strftime('%m/%d/%Y')
-      ceu_earned_date = earned_date.strftime('%m/%d/%Y')
-
+    def write_ceu_credit_earned(user_cst_key:, path_external_id:, credits_earned:, earned_date:, ceu_delete_flag:, ceu_cet_key:, writeback_time:)
       get_object('insert_facade_object', {
         'szObjectName' => 'CEUCredit',
         'oNode' => {
@@ -185,7 +179,7 @@ module NetforumEnterprise
               'ceu_ece_key' => path_external_id,
               'ceu_credit' => credits_earned.to_s,
               'ceu_add_date' => writeback_time,
-              'ceu_earned_date' => ceu_earned_date,
+              'ceu_earned_date' => earned_date,
               'ceu_delete_flag' => ceu_delete_flag,
               'ceu_cet_key' => ceu_cet_key
             }
@@ -195,7 +189,6 @@ module NetforumEnterprise
     end
 
     def write_self_report_credit(user_cst_key:, course_name:, credits_earned:, earned_date:, sce_cet_key:, sce_status:, sce_program:)
-      earned_date_string = earned_date.strftime('%m/%d/%Y')
       get_object('insert_facade_object', {
         'szObjectName' => 'SelfReportCredit',
         'oNode' => {
@@ -206,7 +199,7 @@ module NetforumEnterprise
               'sce_course' => course_name,
               'sce_cet_key' => sce_cet_key,
               'sce_ind_cst_key' => user_cst_key,
-              'sce_activity_date' => earned_date_string,
+              'sce_activity_date' => earned_date,
               'sce_status' => sce_status
             }
           }
@@ -215,14 +208,13 @@ module NetforumEnterprise
     end
 
     def write_event_registrant_attendance(user_cst_key: , reg_key: , grade: , completion_date:)
-      completion_date_string = completion_date.strftime('%Y-%m-%d')
       get_object('update_facade_object', {
         'szObjectName' => 'EventsRegistrant',
         'oNode' => { 'EventsRegistrant' => { 'Registrant' => {
           'reg_key' => reg_key,
           'reg_cst_key' => user_cst_key,
           'reg_grade_ext' => grade,
-          'reg_completion_date_ext' => completion_date_string
+          'reg_completion_date_ext' => completion_date
         } } }
       }, StandardResponse, { output_subname: 'events_registrant_object' })
     end
