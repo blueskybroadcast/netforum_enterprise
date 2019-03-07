@@ -36,7 +36,9 @@ module NetforumEnterprise
 
     def get_individual_information(customer_key)
       if result = get_result('get_individual_information', { 'IndividualKey' => customer_key })
-        result[:individual_objects][:individual_object]
+        individual_object = result[:individual_objects][:individual_object]
+        return individual_object unless individual_object.is_a?(Array)
+        individual_object.first
       end
     end
 
