@@ -13,10 +13,10 @@ module NetforumEnterprise
 
     def get_full_event_list(months_limit = nil, exclude_prc_columns = true)
       where_clause = if months_limit
-        "evt_start_date > \'#{months_limit.to_i.months.ago.strftime('%Y-%m-01')}\'"
-      else
-        ''
-      end
+                       "evt_start_date > \'#{months_limit.to_i.months.ago.strftime('%Y-%m-01')}\'"
+                     else
+                       ''
+                     end
 
       column_list = 'evt_key,evt_title,evt_code,evt_start_date'
       column_list << ',prc_key,prc_price' unless exclude_prc_columns
@@ -31,10 +31,10 @@ module NetforumEnterprise
 
     def get_full_product_list(months_limit = nil)
       where_clause = if months_limit
-        "prd_start_date > \'#{months_limit.to_i.months.ago.strftime('%Y-%m-01')}\'"
-      else
-        ''
-      end
+                       "prd_start_date > \'#{months_limit.to_i.months.ago.strftime('%Y-%m-01')}\'"
+                     else
+                       ''
+                     end
 
       get_array('get_query', {
         'szObjectName' => 'Price_Merchandise @TOP -1',
@@ -62,12 +62,14 @@ module NetforumEnterprise
       }, Invoice, { output_subname: 'invoice_object' })
     end
 
-    def get_invoice_details_by_cst_key(cst_key:)
+    def get_invoice_details_by_cst_key(cst_key:, ivd_prc_prd_keys:)
+      where_clause = "cst_key='#{cst_key}'"
+      where_clause << " and ivd_prc_prd_key IN (#{key_list(ivd_prc_prd_keys)})" if ivd_prc_prd_keys
       get_array('get_query', {
         'szObjectName' => 'InvoiceDetail',
-        'szColumnList' => 'ivd_key,ivd_add_date,ivd_prc_key,ivd_prc_prd_key,ivd_price',
-        'szWhereClause' => "cst_key='#{cst_key}'",
-        'szOrderBy' => ''
+        'szColumnList' => 'cst_key,ivd_key,ivd_add_date,ivd_prc_key,ivd_prc_prd_key,ivd_price,ivd_delete_flag,ivd_void_date',
+        'szWhereClause' => where_clause,
+        'szOrderBy' => 'ivd_add_date DESC'
       }, InvoiceDetail, { output_subname: 'invoice_detail_object' })
     end
 
@@ -105,13 +107,14 @@ module NetforumEnterprise
       }, Registrant, { output_subname: 'events_registrant_object' })
     end
 
-    def get_events_by_customer_key(cst_key:)
+    def get_events_by_customer_key(cst_key:, registrant_reg_evt_keys:)
       where_clause = "reg_cst_key='#{cst_key}'"
+      where_clause << " and Registrant.reg_evt_key IN (#{key_list(registrant_reg_evt_keys)})" if registrant_reg_evt_keys
       get_array('get_query', {
         'szObjectName' => 'EventsRegistrant',
-        'szColumnList' => 'Registrant.reg_key AS Registrant_reg_key,Registrant.reg_cst_key AS Registrant_reg_cst_key,Registrant.reg_evt_key AS Registrant_reg_evt_key,Registrant.reg_registration_date AS Registrant_reg_registration_date',
+        'szColumnList' => 'ivd_key,Registrant.reg_cancel_date AS Registrant_reg_cancel_date,Registrant.reg_key AS Registrant_reg_key,Registrant.reg_cst_key AS Registrant_reg_cst_key,Registrant.reg_evt_key AS Registrant_reg_evt_key,Registrant.reg_registration_date AS Registrant_reg_registration_date',
         'szWhereClause' => "#{where_clause}",
-        'szOrderBy' => ''
+        'szOrderBy' => 'Registrant.reg_registration_date DESC'
       }, Registrant, { output_subname: 'events_registrant_object' })
     end
 
@@ -228,6 +231,10 @@ module NetforumEnterprise
         globals.wsdl @configuration.wsdl
         globals.endpoint @configuration.wsdl.gsub('?WSDL', '')
       end
+    end
+
+    def key_list(keys)
+      "'" + keys.join("','") + "'"
     end
 
     def ivd_key_list(products_with_ivd_key)
