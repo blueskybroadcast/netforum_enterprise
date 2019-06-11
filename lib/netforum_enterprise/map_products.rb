@@ -210,6 +210,20 @@ module NetforumEnterprise
       }, StandardResponse, { output_subname: 'self_report_credit_object' })
     end
 
+    def register_user_for_event(cst_key:, event_key:)
+      get_object('insert_facade_object', {
+        'szObjectName' => 'EventsRegistrant',
+        'oNode' => {
+          'EventsRegistrant' => {
+            'Registrant' => {
+              'reg_cst_key' => cst_key,
+              'reg_evt_key' => event_key
+            }
+          }
+        }
+      }, StandardResponse, { output_subname: 'events_registrant_object' })
+    end
+
     def write_event_registrant_attendance(user_cst_key: , reg_key: , grade: , completion_date:)
       get_object('update_facade_object', {
         'szObjectName' => 'EventsRegistrant',
