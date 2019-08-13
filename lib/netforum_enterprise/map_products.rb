@@ -101,9 +101,9 @@ module NetforumEnterprise
       where_clause << " and reg_cancel_date is null and reg_delete_flag='0'" if search_for_actual_events
       get_array('get_query', {
         'szObjectName' => 'EventsRegistrant',
-        'szColumnList' => return_list || "ivd_key,cst_id,Registrant.reg_cancel_date AS Registrant_reg_cancel_date,Registrant.reg_cst_key AS Registrant_reg_cst_key,Registrant.reg_evt_key AS Registrant_reg_evt_key,Registrant.reg_registration_date AS Registrant_reg_registration_date",
+        'szColumnList' => return_list || "ivd_key,cst_id,Registrant.reg_cancel_date AS Registrant_reg_cancel_date,Registrant.reg_cst_key AS Registrant_reg_cst_key,Registrant.reg_evt_key AS Registrant_reg_evt_key,Registrant.reg_registration_date AS Registrant_reg_registration_date,Registrant.reg_add_date AS Registrant_reg_add_date",
         'szWhereClause' => "#{where_clause}",
-        'szOrderBy' => 'Registrant.reg_registration_date DESC'
+        'szOrderBy' => 'Registrant.reg_add_date DESC'
       }, Registrant, { output_subname: 'events_registrant_object' })
     end
 
@@ -112,9 +112,9 @@ module NetforumEnterprise
       where_clause << " and Registrant.reg_evt_key IN (#{key_list(registrant_reg_evt_keys)})" if registrant_reg_evt_keys
       get_array('get_query', {
         'szObjectName' => 'EventsRegistrant',
-        'szColumnList' => 'ivd_key,Registrant.reg_cancel_date AS Registrant_reg_cancel_date,Registrant.reg_key AS Registrant_reg_key,Registrant.reg_cst_key AS Registrant_reg_cst_key,Registrant.reg_evt_key AS Registrant_reg_evt_key,Registrant.reg_registration_date AS Registrant_reg_registration_date',
+        'szColumnList' => 'ivd_key,Registrant.reg_cancel_date AS Registrant_reg_cancel_date,Registrant.reg_key AS Registrant_reg_key,Registrant.reg_cst_key AS Registrant_reg_cst_key,Registrant.reg_evt_key AS Registrant_reg_evt_key,Registrant.reg_registration_date AS Registrant_reg_registration_date,Registrant.reg_add_date AS Registrant_reg_add_date',
         'szWhereClause' => "#{where_clause}",
-        'szOrderBy' => 'Registrant.reg_registration_date DESC'
+        'szOrderBy' => 'Registrant.reg_add_date DESC'
       }, Registrant, { output_subname: 'events_registrant_object' })
     end
 
