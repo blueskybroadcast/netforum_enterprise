@@ -1,10 +1,12 @@
 module NetforumEnterprise
   class MapProducts
     attr_reader :authentication_token, :last_request, :last_response
+    attr_accessor :read_timeout
 
     def initialize(authentication_token, configuration)
       @authentication_token = authentication_token
       @configuration = configuration
+      @read_timeout = nil
     end
 
     def get_event_list
@@ -241,6 +243,8 @@ module NetforumEnterprise
     def client
       raise 'Undefined global configuration option "wsdl". Use NetforumEnterprise.configure { |config| config.wsdl = "value" } to set this.' unless @configuration.wsdl
       options = @configuration.client_options.merge(soap_header: { 'tns:AuthorizationToken' => { 'tns:Token' => @authentication_token } })
+      options.merge!(read_timeout: read_timeout) if read_timeout.present?
+
       Savon.client(options) do |globals|
         globals.wsdl @configuration.wsdl
         globals.endpoint @configuration.wsdl.gsub('?WSDL', '')
