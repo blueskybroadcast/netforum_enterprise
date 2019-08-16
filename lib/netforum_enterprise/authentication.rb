@@ -6,7 +6,7 @@ module NetforumEnterprise
     INVALID_CUSTOMER_KEY = '00000000-0000-0000-0000-000000000000'
 
     attr_reader :last_request, :last_response
-    attr_accessor :read_timeout
+    attr_accessor :read_timeout, :open_timeout
 
     def initialize(username, password, configuration)
       @auth_token = nil
@@ -14,6 +14,7 @@ module NetforumEnterprise
       @password = password
       @configuration = configuration
       @read_timeout = nil
+      @open_timeout = nil
     end
 
     def authenticate
@@ -75,7 +76,8 @@ module NetforumEnterprise
       else
         options = @configuration.client_options
       end
-      options.merge!(read_timeout: read_timeout) if read_timeout.present?
+      options[:read_timeout] = read_timeout if read_timeout.present?
+      options[:open_timeout] = open_timeout if open_timeout.present?
       Savon.client(options) do |globals|
         globals.wsdl @configuration.wsdl
       end
