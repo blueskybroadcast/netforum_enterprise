@@ -66,14 +66,27 @@ module NetforumEnterprise
     end
 
     def get_invoice_details_by_cst_key(cst_key:, ivd_prc_prd_keys:)
-      where_clause = "cst_key='#{cst_key}'"
-      where_clause << " and ivd_prc_prd_key IN (#{key_list(ivd_prc_prd_keys)})" if ivd_prc_prd_keys
-      get_array('get_query', {
-        'szObjectName' => 'InvoiceDetail',
-        'szColumnList' => 'cst_key,ivd_key,ivd_add_date,ivd_prc_key,ivd_prc_prd_key,ivd_price,ivd_delete_flag,ivd_void_date',
-        'szWhereClause' => where_clause,
-        'szOrderBy' => 'ivd_add_date DESC'
-      }, InvoiceDetail, { output_subname: 'invoice_detail_object' })
+      if @configuration.use_execute_method
+        get_array('execute_method', {
+          'serviceName' => 'CASDIIntegration',
+          'methodName' => 'GetInvoiceDetails',
+          'parameters' => {
+            'Parameter' => [
+              { 'Name' => 'cst_key', 'Value' => cst_key },
+              { 'Name' => 'prd_key_list', 'Value' => ivd_prc_prd_keys.join(', ') }
+            ]
+          },
+        }, InvoiceDetail, { output_subname: 'invoice_detail_object' })
+      else
+        where_clause = "cst_key='#{cst_key}'"
+        where_clause << " and ivd_prc_prd_key IN (#{key_list(ivd_prc_prd_keys)})" if ivd_prc_prd_keys
+        get_array('get_query', {
+          'szObjectName' => 'InvoiceDetail',
+          'szColumnList' => 'cst_key,ivd_key,ivd_add_date,ivd_prc_key,ivd_prc_prd_key,ivd_price,ivd_delete_flag,ivd_void_date',
+          'szWhereClause' => where_clause,
+          'szOrderBy' => 'ivd_add_date DESC'
+        }, InvoiceDetail, { output_subname: 'invoice_detail_object' })
+      end
     end
 
     def get_product_list
@@ -93,32 +106,58 @@ module NetforumEnterprise
     end
 
     def get_events_registrant_by_event_key(evt_key:, cst_id: nil, cst_key: nil, return_list: nil, search_for_actual_events: false)
-      where_clause = "reg_evt_key='#{evt_key}'"
-      where_clause << if cst_key
-                        " and reg_cst_key='#{cst_key}'"
-                      elsif cst_id
-                        " and cst_id='#{cst_id}'"
-                      else
-                        ''
-                      end
-      where_clause << " and reg_cancel_date is null and reg_delete_flag='0'" if search_for_actual_events
-      get_array('get_query', {
-        'szObjectName' => 'EventsRegistrant',
-        'szColumnList' => return_list || "ivd_key,cst_id,Registrant.reg_cancel_date AS Registrant_reg_cancel_date,Registrant.reg_cst_key AS Registrant_reg_cst_key,Registrant.reg_evt_key AS Registrant_reg_evt_key,Registrant.reg_registration_date AS Registrant_reg_registration_date,Registrant.reg_add_date AS Registrant_reg_add_date",
-        'szWhereClause' => "#{where_clause}",
-        'szOrderBy' => 'Registrant.reg_add_date DESC'
-      }, Registrant, { output_subname: 'events_registrant_object' })
+      if @configuration.use_execute_method && cst_id.nil? && return_list.nil?
+        get_array('execute_method', {
+          'serviceName' => 'CASDIIntegration',
+          'methodName' => 'GetEventRegistrants',
+          'parameters' => {
+            'Parameter' => [
+              { 'Name' => 'cst_key', 'Value' => cst_key },
+              { 'Name' => 'evt_key_list', 'Value' => evt_key }
+            ]
+          },
+        }, Registrant, { output_subname: 'event_registrant_object' })
+      else
+        where_clause = "reg_evt_key='#{evt_key}'"
+        where_clause << if cst_key
+                          " and reg_cst_key='#{cst_key}'"
+                        elsif cst_id
+                          " and cst_id='#{cst_id}'"
+                        else
+                          ''
+                        end
+        where_clause << " and reg_cancel_date is null and reg_delete_flag='0'" if search_for_actual_events
+        get_array('get_query', {
+          'szObjectName' => 'EventsRegistrant',
+          'szColumnList' => return_list || "ivd_key,cst_id,Registrant.reg_cancel_date AS Registrant_reg_cancel_date,Registrant.reg_cst_key AS Registrant_reg_cst_key,Registrant.reg_evt_key AS Registrant_reg_evt_key,Registrant.reg_registration_date AS Registrant_reg_registration_date,Registrant.reg_add_date AS Registrant_reg_add_date",
+          'szWhereClause' => "#{where_clause}",
+          'szOrderBy' => 'Registrant.reg_add_date DESC'
+        }, Registrant, { output_subname: 'events_registrant_object' })
+      end
     end
 
     def get_events_by_customer_key(cst_key:, registrant_reg_evt_keys:)
-      where_clause = "reg_cst_key='#{cst_key}'"
-      where_clause << " and Registrant.reg_evt_key IN (#{key_list(registrant_reg_evt_keys)})" if registrant_reg_evt_keys
-      get_array('get_query', {
-        'szObjectName' => 'EventsRegistrant',
-        'szColumnList' => 'ivd_key,Registrant.reg_cancel_date AS Registrant_reg_cancel_date,Registrant.reg_key AS Registrant_reg_key,Registrant.reg_cst_key AS Registrant_reg_cst_key,Registrant.reg_evt_key AS Registrant_reg_evt_key,Registrant.reg_registration_date AS Registrant_reg_registration_date,Registrant.reg_add_date AS Registrant_reg_add_date',
-        'szWhereClause' => "#{where_clause}",
-        'szOrderBy' => 'Registrant.reg_add_date DESC'
-      }, Registrant, { output_subname: 'events_registrant_object' })
+      if @configuration.use_execute_method
+        get_array('execute_method', {
+          'serviceName' => 'CASDIIntegration',
+          'methodName' => 'GetEventRegistrants',
+          'parameters' => {
+            'Parameter' => [
+              { 'Name' => 'cst_key', 'Value' => cst_key },
+              { 'Name' => 'evt_key_list', 'Value' => registrant_reg_evt_keys.join(', ') }
+            ]
+          },
+        }, Registrant, { output_subname: 'event_registrant_object' })
+      else
+        where_clause = "reg_cst_key='#{cst_key}'"
+        where_clause << " and Registrant.reg_evt_key IN (#{key_list(registrant_reg_evt_keys)})" if registrant_reg_evt_keys
+        get_array('get_query', {
+          'szObjectName' => 'EventsRegistrant',
+          'szColumnList' => 'ivd_key,Registrant.reg_cancel_date AS Registrant_reg_cancel_date,Registrant.reg_key AS Registrant_reg_key,Registrant.reg_cst_key AS Registrant_reg_cst_key,Registrant.reg_evt_key AS Registrant_reg_evt_key,Registrant.reg_registration_date AS Registrant_reg_registration_date,Registrant.reg_add_date AS Registrant_reg_add_date',
+          'szWhereClause' => "#{where_clause}",
+          'szOrderBy' => 'Registrant.reg_add_date DESC'
+        }, Registrant, { output_subname: 'events_registrant_object' })
+      end
     end
 
     def get_user_by_cst_key(cst_key:)
