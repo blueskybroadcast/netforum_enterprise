@@ -185,7 +185,7 @@ module NetforumEnterprise
         'ceu_cet_key' => ceu_cet_key
       }
 
-      if path_external_id.first(2).casecmp('p|').zero?
+      if path_external_id.first(2).casecmp('p:').zero?
         ceu_credit_data['ceu_cpp_key'] = path_external_id.slice(2..-1)
       else
         ceu_credit_data['ceu_ece_key'] = path_external_id
