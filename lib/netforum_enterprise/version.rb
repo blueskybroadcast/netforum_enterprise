@@ -1,3 +1,3 @@
 module NetforumEnterprise
-  VERSION = '2.1.7'.freeze
+  VERSION = '2.1.9'.freeze
 end
