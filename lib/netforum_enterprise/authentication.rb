@@ -46,12 +46,24 @@ module NetforumEnterprise
     end
 
     def get_customer_committees(customer_key)
-      get_array('get_query', {
-        'szObjectName' => 'Committee',
-        'szColumnList' => 'cst_key,cmt_key,cmt_code,cmt_name',
-        'szWhereClause' => "cst_key='#{customer_key}'",
-        'szOrderBy' => ''
-      }, Committee, { output_subnames: %w(committee_participation_e_web_object committees_object committee_object) })
+      if @configuration.use_execute_method
+        get_array('execute_method', {
+          'serviceName' => 'CASDIIntegration',
+          'methodName' => 'GetCommittees',
+          'parameters' => {
+            'Parameter' => [
+              { 'Name' => 'cst_key', 'Value' => customer_key }
+            ]
+          },
+        }, Committee, { output_subname: 'committee_object' })
+      else
+        get_array('get_query', {
+          'szObjectName' => 'Committee',
+          'szColumnList' => 'cst_key,cmt_key,cmt_code,cmt_name',
+          'szWhereClause' => "cst_key='#{customer_key}'",
+          'szOrderBy' => ''
+        }, Committee, { output_subnames: %w(committee_participation_e_web_object committees_object committee_object) })
+      end
     end
 
     def get_member_type_codes(customer_key)
