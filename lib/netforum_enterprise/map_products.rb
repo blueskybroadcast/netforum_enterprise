@@ -176,19 +176,26 @@ module NetforumEnterprise
     end
 
     def write_ceu_credit_earned(user_cst_key:, path_external_id:, credits_earned:, earned_date:, ceu_delete_flag:, ceu_cet_key:, writeback_time:)
+      ceu_credit_data = {
+        'ceu_ind_cst_key' => user_cst_key,
+        'ceu_credit' => credits_earned.to_s,
+        'ceu_add_date' => writeback_time,
+        'ceu_earned_date' => earned_date,
+        'ceu_delete_flag' => ceu_delete_flag,
+        'ceu_cet_key' => ceu_cet_key
+      }
+
+      if path_external_id.first(2).casecmp('p:').zero?
+        ceu_credit_data['ceu_cpp_key'] = path_external_id.slice(2..-1)
+      else
+        ceu_credit_data['ceu_ece_key'] = path_external_id
+      end
+
       get_object('insert_facade_object', {
         'szObjectName' => 'CEUCredit',
         'oNode' => {
           'CEUCredits' => {
-            'CEUCredit' => {
-              'ceu_ind_cst_key' => user_cst_key,
-              'ceu_ece_key' => path_external_id,
-              'ceu_credit' => credits_earned.to_s,
-              'ceu_add_date' => writeback_time,
-              'ceu_earned_date' => earned_date,
-              'ceu_delete_flag' => ceu_delete_flag,
-              'ceu_cet_key' => ceu_cet_key
-            }
+            'CEUCredit' => ceu_credit_data
           }
         }
       }, StandardResponse, { output_subname: 'ceu_credit_object' })
