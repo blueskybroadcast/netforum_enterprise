@@ -82,7 +82,9 @@ module NetforumEnterprise
 
     private
 
-    def client(with_auth_token = true)
+    def client(with_auth_token = false)
+      return @client if defined?(@client)
+
       if with_auth_token
         options = @configuration.client_options.merge(soap_header: { 'tns:AuthorizationToken' => { 'tns:Token' => @auth_token } })
       else
@@ -90,15 +92,17 @@ module NetforumEnterprise
       end
       options[:read_timeout] = read_timeout if read_timeout.present?
       options[:open_timeout] = open_timeout if open_timeout.present?
-      Savon.client(options) do |globals|
+
+      @client = Savon.client(options) do |globals|
         globals.wsdl @configuration.wsdl
+        globals.adapter :net_http
       end
     end
 
     def get_result(service, params, options = {})
       begin
         operation = client.operation(service.to_sym,)
-        response = operation.call(message: params)
+        response = operation.call(message: params, soap_header: { 'tns:AuthorizationToken' => { 'tns:Token' => @auth_token } })
         @last_request = operation.raw_request
         @last_response = operation.raw_response
         @auth_token = response.header[:authorization_token][:token] if response.header[:authorization_token][:token].length > 0
@@ -119,7 +123,7 @@ module NetforumEnterprise
     def get_array(service, params, klass, options={})
       begin
         operation = client.operation(service.to_sym)
-        response = operation.call(message: params)
+        response = operation.call(message: params, soap_header: { 'tns:AuthorizationToken' => { 'tns:Token' => @auth_token } })
         @last_request = operation.raw_request
         @last_response = operation.raw_response
         @auth_token = response.header[:authorization_token][:token] if response.header[:authorization_token][:token].length > 0

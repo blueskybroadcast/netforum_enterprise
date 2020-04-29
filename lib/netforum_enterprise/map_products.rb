@@ -288,14 +288,17 @@ module NetforumEnterprise
     private
 
     def client
+      return @client if defined?(@client)
+
       raise 'Undefined global configuration option "wsdl". Use NetforumEnterprise.configure { |config| config.wsdl = "value" } to set this.' unless @configuration.wsdl
       options = @configuration.client_options.merge(soap_header: { 'tns:AuthorizationToken' => { 'tns:Token' => @authentication_token } })
       options[:read_timeout] = read_timeout if read_timeout.present?
       options[:open_timeout] = open_timeout if open_timeout.present?
 
-      Savon.client(options) do |globals|
+      @client = Savon.client(options) do |globals|
         globals.wsdl @configuration.wsdl
         globals.endpoint @configuration.wsdl.gsub('?WSDL', '')
+        globals.adapter :net_http
       end
     end
 
@@ -309,7 +312,7 @@ module NetforumEnterprise
 
     def get_array(service, params, klass, options={})
       operation = client.operation(service.to_sym)
-      response = operation.call(message: params)
+      response = operation.call(message: params, soap_header: { 'tns:AuthorizationToken' => { 'tns:Token' => @auth_token } })
       @last_request = operation.raw_request
       @last_response = operation.raw_response
       set_auth_token(response)
@@ -346,7 +349,7 @@ module NetforumEnterprise
 
     def get_object(service, params, klass, options={})
       operation = client.operation(service.to_sym)
-      response = operation.call(message: params)
+      response = operation.call(message: params, soap_header: { 'tns:AuthorizationToken' => { 'tns:Token' => @auth_token } })
       @last_request = operation.raw_request
       @last_response = operation.raw_response
       set_auth_token(response)
