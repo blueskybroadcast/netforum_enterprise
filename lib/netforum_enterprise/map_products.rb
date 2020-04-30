@@ -312,7 +312,7 @@ module NetforumEnterprise
 
     def get_array(service, params, klass, options={})
       operation = client.operation(service.to_sym)
-      response = operation.call(message: params, soap_header: { 'tns:AuthorizationToken' => { 'tns:Token' => @auth_token } })
+      response = operation.call(message: params, soap_header: { 'tns:AuthorizationToken' => { 'tns:Token' => @authentication_token } })
       @last_request = operation.raw_request
       @last_response = operation.raw_response
       set_auth_token(response)
@@ -349,7 +349,7 @@ module NetforumEnterprise
 
     def get_object(service, params, klass, options={})
       operation = client.operation(service.to_sym)
-      response = operation.call(message: params, soap_header: { 'tns:AuthorizationToken' => { 'tns:Token' => @auth_token } })
+      response = operation.call(message: params, soap_header: { 'tns:AuthorizationToken' => { 'tns:Token' => @authentication_token } })
       @last_request = operation.raw_request
       @last_response = operation.raw_response
       set_auth_token(response)
