@@ -66,7 +66,7 @@ module NetforumEnterprise
     end
 
     def get_invoice_details_by_cst_key(cst_key:, ivd_prc_prd_keys:)
-      if @configuration.use_execute_method
+      if @configuration.use_execute_method?
         get_array('execute_method', {
           'serviceName' => 'CASDIIntegration',
           'methodName' => 'GetInvoiceDetails',
@@ -106,7 +106,7 @@ module NetforumEnterprise
     end
 
     def get_events_registrant_by_event_key(evt_key:, cst_id: nil, cst_key: nil, return_list: nil, search_for_actual_events: false)
-      if @configuration.use_execute_method && cst_id.nil? && return_list.nil?
+      if @configuration.use_execute_method? && cst_id.nil? && return_list.nil?
         get_array('execute_method', {
           'serviceName' => 'CASDIIntegration',
           'methodName' => 'GetEventRegistrants',
@@ -137,7 +137,7 @@ module NetforumEnterprise
     end
 
     def get_events_by_customer_key(cst_key:, registrant_reg_evt_keys:)
-      if @configuration.use_execute_method
+      if @configuration.use_execute_method?
         get_array('execute_method', {
           'serviceName' => 'CASDIIntegration',
           'methodName' => 'GetEventRegistrants',
