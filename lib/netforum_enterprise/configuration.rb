@@ -1,7 +1,7 @@
 module NetforumEnterprise
   class Configuration
-    attr_accessor :provider, :client_options
-    attr_writer :wsdl, :use_execute_method
+    attr_accessor :provider
+    attr_writer :wsdl, :use_execute_method, :client_options
 
     def initialize
       logger = defined?(Rails) ? Rails.logger : Logger.new(STDOUT)
@@ -9,7 +9,11 @@ module NetforumEnterprise
       @wsdl = nil
       @use_execute_method = false
       @client_options = { log: true, log_level: :debug, logger: logger, pretty_print_xml: true }
-      @client_options[:proxy] = proxy_url if use_proxy?
+    end
+
+    def client_options
+      @client_options[:proxy] = proxy_url if @client_options[:proxy].blank? && use_proxy?
+      @client_options
     end
 
     def wsdl
@@ -27,7 +31,7 @@ module NetforumEnterprise
     end
 
     def use_proxy?
-      @provider.settings&.dig('use_proxy').present?
+      @use_proxy ||= @provider.settings&.dig('use_proxy').present?
     end
   end
 end
