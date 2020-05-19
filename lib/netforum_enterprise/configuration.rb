@@ -1,7 +1,7 @@
 module NetforumEnterprise
   class Configuration
-    attr_accessor :provider
-    attr_writer :wsdl, :use_execute_method, :client_options
+    attr_accessor :provider, :client_options
+    attr_writer :wsdl, :use_execute_method
 
     def initialize
       logger = defined?(Rails) ? Rails.logger : Logger.new(STDOUT)
