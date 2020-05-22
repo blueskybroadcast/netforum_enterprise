@@ -340,7 +340,7 @@ module NetforumEnterprise
 
       return_list
     rescue Savon::SOAPFault => error
-      @last_request ||= operation.raw_request
+      @last_request ||= operation&.raw_request
       @last_response = error.http
       fault_code = error.to_hash[:fault][:faultcode]
       Rails.logger.error "!! NetforumEnterprise get_array error: #{fault_code}"
@@ -368,7 +368,7 @@ module NetforumEnterprise
         nil
       end
     rescue Savon::SOAPFault => error
-      @last_request ||= operation.raw_request
+      @last_request ||= operation&.raw_request
       @last_response = error.http
       fault_code = error.to_hash[:fault][:faultcode]
       Rails.logger.error "!! NetforumEnterprise get_object error: #{fault_code}"

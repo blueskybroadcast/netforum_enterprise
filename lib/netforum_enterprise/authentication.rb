@@ -26,7 +26,7 @@ module NetforumEnterprise
         @auth_token = response.header[:authorization_token][:token] if response.header[:authorization_token][:token].length > 0
         true
       rescue Savon::SOAPFault => e
-        @last_request ||= operation.raw_request
+        @last_request = operation&.raw_request
         @last_response = e.http
         @auth_token = nil
         false
@@ -114,7 +114,7 @@ module NetforumEnterprise
           nil
         end
       rescue Savon::SOAPFault => e
-        @last_request ||= operation.raw_request
+        @last_request ||= operation&.raw_request
         @last_response = e.http
         nil
       end
@@ -157,7 +157,7 @@ module NetforumEnterprise
         end
         return_list
       rescue Savon::SOAPFault => e
-        @last_request ||= operation.raw_request
+        @last_request ||= operation&.raw_request
         @last_response = e.http
         nil
       end
