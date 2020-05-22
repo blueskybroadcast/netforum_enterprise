@@ -20,6 +20,10 @@ module NetforumEnterprise
       @wsdl.presence || @provider.wsdl_url
     end
 
+    def use_web_user_validate_login?
+      @provider.settings&.dig('use_web_user_validate_login').present?
+    end
+
     def use_execute_method?
       @provider.settings&.dig('use_execute_method').present? || @use_execute_method
     end

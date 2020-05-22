@@ -72,7 +72,15 @@ module NetforumEnterprise
     end
 
     def web_user_login(login, password)
-      get_result('web_web_user_login', { 'LoginOrEmail' => login, 'password' => password })
+      if @configuration.use_web_user_validate_login?
+        get_result('web_web_user_validate_login', { 'LoginOrEmail' => login, 'password' => password })
+      else
+        get_result('web_web_user_login', { 'LoginOrEmail' => login, 'password' => password })
+      end
+    end
+
+    def web_user_validate_login(login, password)
+
     end
 
     def web_validate(login_auth_token)
