@@ -46,7 +46,7 @@ module NetforumEnterprise
     end
 
     def get_customer_committees(customer_key)
-      if @configuration.use_execute_method
+      if @configuration.use_execute_method?
         get_array('execute_method', {
           'serviceName' => 'CASDIIntegration',
           'methodName' => 'GetCommittees',
