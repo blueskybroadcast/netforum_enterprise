@@ -8,6 +8,7 @@ module NetforumEnterprise
       @provider = nil
       @wsdl = nil
       @use_execute_method = false
+      @use_web_user_validate_login = false
       @client_options = { log: true, log_level: :debug, logger: logger, pretty_print_xml: true }
     end
 
@@ -17,15 +18,15 @@ module NetforumEnterprise
     end
 
     def wsdl
-      @wsdl.presence || @provider.wsdl_url
+      @wsdl.presence || @provider&.wsdl_url
     end
 
     def use_web_user_validate_login?
-      @provider.settings&.dig('use_web_user_validate_login').present?
+      @use_web_user_validate_login || @provider&.settings&.dig('use_web_user_validate_login').present?
     end
 
     def use_execute_method?
-      @provider.settings&.dig('use_execute_method').present? || @use_execute_method
+      @use_execute_method || @provider&.settings&.dig('use_execute_method').present?
     end
 
     private
@@ -35,7 +36,7 @@ module NetforumEnterprise
     end
 
     def use_proxy?
-      @use_proxy ||= @provider.settings&.dig('use_proxy').present?
+      @use_proxy ||= @provider&.settings&.dig('use_proxy').present?
     end
   end
 end
