@@ -8,7 +8,7 @@ module NetforumEnterprise
       @provider = nil
       @wsdl = nil
       @use_execute_method = false
-      @use_web_user_validate_login = false
+      @retry_login_with_another_method = false
       @client_options = { log: true, log_level: :debug, logger: logger, pretty_print_xml: true }
     end
 
@@ -21,8 +21,8 @@ module NetforumEnterprise
       @wsdl.presence || @provider&.wsdl_url
     end
 
-    def use_web_user_validate_login?
-      @use_web_user_validate_login || @provider&.settings&.dig('use_web_user_validate_login').present?
+    def retry_login_with_another_method?
+      @retry_login_with_another_method || @provider&.settings&.dig('retry_login_with_another_method').present?
     end
 
     def use_execute_method?
