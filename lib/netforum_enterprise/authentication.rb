@@ -1,5 +1,6 @@
 require 'savon'
 require 'httpclient'
+require 'cgi'
 
 module NetforumEnterprise
   class Authentication
@@ -20,7 +21,7 @@ module NetforumEnterprise
     def authenticate
       begin
         operation = client(false).operation(:authenticate)
-        response = operation.call(message: { 'userName' => @username, 'password' => @password })
+        response = operation.call(message: { 'userName' => CGI.escape_html(@username), 'password' => CGI.escape_html(@password) })
         @last_request = operation.raw_request
         @last_response = operation.raw_response
         @auth_token = response.header[:authorization_token][:token] if response.header[:authorization_token][:token].length > 0
