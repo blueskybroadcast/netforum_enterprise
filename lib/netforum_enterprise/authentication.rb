@@ -74,7 +74,7 @@ module NetforumEnterprise
     def web_user_login(login, password)
       result = get_result('web_web_user_login', { 'LoginOrEmail' => login, 'password!' => escape_password(password) })
       if result.nil? && @configuration.retry_login_with_another_method?
-        result = get_result('web_web_user_validate_login', { 'LoginOrEmail' => login, 'password!' => password })
+        result = get_result('web_web_user_validate_login', { 'LoginOrEmail' => login, 'password' => password })
       end
       result
     end
