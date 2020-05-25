@@ -72,9 +72,9 @@ module NetforumEnterprise
     end
 
     def web_user_login(login, password)
-      result = get_result('web_web_user_login', { 'LoginOrEmail' => login, 'password' => password })
+      result = get_result('web_web_user_login', { 'LoginOrEmail' => login, 'password!' => escape_password(password) })
       if result.nil? && @configuration.retry_login_with_another_method?
-        result = get_result('web_web_user_validate_login', { 'LoginOrEmail' => login, 'password' => password })
+        result = get_result('web_web_user_validate_login', { 'LoginOrEmail' => login, 'password!' => password })
       end
       result
     end
@@ -165,6 +165,10 @@ module NetforumEnterprise
         @last_response = e.http
         nil
       end
+    end
+
+    def escape_password(password)
+      password.gsub('&', '&amp;').gsub('<', '&lt;').gsub('>', '&gt;').gsub('"', '&quot;').gsub("'", '&apos;')
     end
   end
 end
