@@ -26,7 +26,7 @@ module NetforumEnterprise
         @auth_token = response.header[:authorization_token][:token] if response.header[:authorization_token][:token].length > 0
         true
       rescue Savon::SOAPFault => e
-        @last_request ||= operation.raw_request
+        @last_request = operation&.raw_request
         @last_response = e.http
         @auth_token = nil
         false
@@ -72,7 +72,11 @@ module NetforumEnterprise
     end
 
     def web_user_login(login, password)
-      get_result('web_web_user_login', { 'LoginOrEmail' => login, 'password' => password })
+      result = get_result('web_web_user_login', { 'LoginOrEmail' => login, 'password!' => escape_password(password) })
+      if result.nil? && @configuration.retry_login_with_another_method?
+        result = get_result('web_web_user_validate_login', { 'LoginOrEmail' => login, 'password' => password })
+      end
+      result
     end
 
     def web_validate(login_auth_token)
@@ -114,7 +118,7 @@ module NetforumEnterprise
           nil
         end
       rescue Savon::SOAPFault => e
-        @last_request ||= operation.raw_request
+        @last_request = operation&.raw_request
         @last_response = e.http
         nil
       end
@@ -157,10 +161,14 @@ module NetforumEnterprise
         end
         return_list
       rescue Savon::SOAPFault => e
-        @last_request ||= operation.raw_request
+        @last_request = operation&.raw_request
         @last_response = e.http
         nil
       end
+    end
+
+    def escape_password(password)
+      password.gsub('&', '&amp;').gsub('<', '&lt;').gsub('>', '&gt;').gsub('"', '&quot;').gsub("'", '&apos;')
     end
   end
 end
