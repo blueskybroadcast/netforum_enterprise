@@ -348,7 +348,6 @@ module NetforumEnterprise
 
       return_list
     rescue Savon::SOAPFault => error
-      binding.pry
       @last_request = operation&.raw_request
       @last_response = error.http
       fault_code = error.to_hash[:fault][:faultcode]
