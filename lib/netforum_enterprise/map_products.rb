@@ -240,9 +240,10 @@ module NetforumEnterprise
       }, StandardResponse, { output_subname: 'ceu_credit_object' })
     end
 
-    def write_self_report_credit(user_cst_key:, course_name:, credits_earned:, earned_date:, sce_cet_key:, sce_status:, sce_program:)
+    def write_certificate_issued(use_ceu_credit_object: false, user_cst_key:, course_name:, credits_earned:, earned_date:, sce_cet_key:, sce_status:, sce_program:)
+      object_name = use_ceu_credit_object ? 'CEUCredit' : 'SelfReportCredit'
       get_object('insert_facade_object', {
-        'szObjectName' => 'SelfReportCredit',
+        'szObjectName' => object_name,
         'oNode' => {
           'SelfReportCreditObjects' => {
             'SelfReportCreditObject' => {
