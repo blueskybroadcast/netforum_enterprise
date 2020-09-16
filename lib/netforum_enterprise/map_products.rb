@@ -214,6 +214,14 @@ module NetforumEnterprise
       }, StandardResponse, { output_subname: 'apdtlms_course_object' })
     end
 
+    def find_credit_key(ece_key:)
+      get_array('get_query', {
+        'szObjectName' => 'CEUCredit @TOP 1',
+        'szColumnList' => 'cet_key',
+        'szWhereClause' => "ece_key='#{ece_key}'",
+      }, StandardResponse, { output_subname: 'ceu_credit_object' })
+    end
+
     def write_ceu_credit_earned(user_cst_key:, path_external_id:, credits_earned:, earned_date:, ceu_delete_flag:, ceu_cet_key:, writeback_time:)
       ceu_credit_data = {
         'ceu_ind_cst_key' => user_cst_key,
