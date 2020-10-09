@@ -29,6 +29,18 @@ module NetforumEnterprise
       @use_execute_method || @provider&.settings&.dig('use_execute_method').present?
     end
 
+    def product_sync_method_name
+      @product_sync_method_name || @provider&.settings&.dig('product_sync_method_name').strip
+    end
+
+    def event_sync_method_name
+      @event_sync_method_name || @provider&.settings&.dig('event_sync_method_name').strip
+    end
+
+    def service_name
+      @service_name || @provider&.settings&.dig('service_name').strip
+    end
+
     private
 
     def proxy_url
