@@ -73,7 +73,7 @@ module NetforumEnterprise
           'parameters' => {
             'Parameter' => [
               { 'Name' => 'cst_key', 'Value' => cst_key },
-              { 'Name' => 'prd_key_list', 'Value' => ivd_prc_prd_keys.join(', ') }
+              { 'Name' => 'prd_key_list', 'Value' => ivd_prc_prd_keys.join(',') }
             ]
           },
         }, InvoiceDetail, { output_subname: 'invoice_detail_object' })
@@ -116,7 +116,7 @@ module NetforumEnterprise
               { 'Name' => 'evt_key_list', 'Value' => evt_key }
             ]
           },
-        }, Registrant, { output_subname: 'event_registrant_object' })
+        }, Registrant, { output_subname: 'events_registrant_object' })
       else
         where_clause = "reg_evt_key='#{evt_key}'"
         where_clause << if cst_key
@@ -144,10 +144,10 @@ module NetforumEnterprise
           'parameters' => {
             'Parameter' => [
               { 'Name' => 'cst_key', 'Value' => cst_key },
-              { 'Name' => 'evt_key_list', 'Value' => registrant_reg_evt_keys.join(', ') }
+              { 'Name' => 'evt_key_list', 'Value' => registrant_reg_evt_keys.join(',') }
             ]
           },
-        }, Registrant, { output_subname: 'event_registrant_object' })
+        }, Registrant, { output_subname: 'events_registrant_object' })
       else
         where_clause = "reg_cst_key='#{cst_key}'"
         where_clause << " and Registrant.reg_evt_key IN (#{key_list(registrant_reg_evt_keys)})" if registrant_reg_evt_keys
