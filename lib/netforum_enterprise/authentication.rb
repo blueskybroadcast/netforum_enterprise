@@ -84,6 +84,12 @@ module NetforumEnterprise
       customer_key unless customer_key == INVALID_CUSTOMER_KEY
     end
 
+    def web_individual_get(customer_key)
+      result = get_result('web_individual_get', { key: customer_key })
+      return {} unless result
+      result[:individual]
+    end
+
     private
 
     def client(with_auth_token = false)
