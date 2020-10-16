@@ -1,5 +1,11 @@
 module NetforumEnterprise
   class Configuration
+    DEFAULT_NAMES = {
+      service_name: 'CASDIIntegration',
+      event_sync_method_name: 'GetEventRegistrants',
+      product_sync_method_name: 'GetInvoiceDetails'
+    }.freeze
+
     attr_accessor :provider
     attr_writer :wsdl, :use_execute_method, :client_options
 
@@ -27,6 +33,18 @@ module NetforumEnterprise
 
     def use_execute_method?
       @use_execute_method || @provider&.settings&.dig('use_execute_method').present?
+    end
+
+    def product_sync_method_name
+      @product_sync_method_name || @provider&.settings&.dig('product_sync_method_name').strip || DEFAULT_NAMES[:product_sync_method_name]
+    end
+
+    def event_sync_method_name
+      @event_sync_method_name || @provider&.settings&.dig('event_sync_method_name').strip || DEFAULT_NAMES[:event_sync_method_name]
+    end
+
+    def service_name
+      @service_name || @provider&.settings&.dig('service_name').strip || DEFAULT_NAMES[:service_name]
     end
 
     private
