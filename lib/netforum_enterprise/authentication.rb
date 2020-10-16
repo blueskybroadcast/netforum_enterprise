@@ -85,9 +85,7 @@ module NetforumEnterprise
     end
 
     def web_individual_get(customer_key)
-      result = get_result('web_individual_get', { key: customer_key })
-      return {} unless result
-      result[:individual]
+      get_result('web_individual_get', { key: customer_key }) || {}
     end
 
     private
