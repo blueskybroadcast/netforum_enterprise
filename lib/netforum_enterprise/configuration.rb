@@ -3,7 +3,9 @@ module NetforumEnterprise
     DEFAULT_NAMES = {
       service_name: 'CASDIIntegration',
       event_sync_method_name: 'GetEventRegistrants',
-      product_sync_method_name: 'GetInvoiceDetails'
+      product_sync_method_name: 'GetInvoiceDetails',
+      demo_sync_method_name: 'ADAWebServices',
+      cdr_service_name: 'CDRpathlmsgetcust'
     }.freeze
 
     attr_accessor :provider
@@ -43,8 +45,16 @@ module NetforumEnterprise
       @event_sync_method_name || @provider&.settings&.dig('event_sync_method_name').strip || DEFAULT_NAMES[:event_sync_method_name]
     end
 
+    def demo_sync_method_name
+      @event_sync_method_name || @provider&.settings&.dig('demo_sync_method_name').strip || DEFAULT_NAMES[:demo_sync_method_name]
+    end
+
     def service_name
       @service_name || @provider&.settings&.dig('service_name').strip || DEFAULT_NAMES[:service_name]
+    end
+
+    def cdr_service_name
+      @service_name || @provider&.settings&.dig('cdr_service_name').strip || DEFAULT_NAMES[:cdr_service_name]
     end
 
     private

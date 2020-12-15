@@ -45,6 +45,18 @@ module NetforumEnterprise
       end
     end
 
+    def get_cdr_custom_fields(customer_key)
+      get_array('execute_method', {
+        'serviceName' => "#{@configuration.cdr_service_name}",
+        'methodName' => "#{@configuration.demo_sync_method_name}",
+        'parameters' => {
+          'Parameter' => [
+            { 'Name' => 'cst_key', 'Value' => customer_key }
+          ]
+        },
+      }, StandardResponse, { output_subname: 'customer' })
+    end
+
     def get_customer_committees(customer_key)
       if @configuration.use_execute_method?
         get_array('execute_method', {
