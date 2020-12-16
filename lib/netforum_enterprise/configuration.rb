@@ -46,7 +46,7 @@ module NetforumEnterprise
     end
 
     def demo_sync_method_name
-      @event_sync_method_name || @provider&.settings&.dig('demo_sync_method_name').strip || DEFAULT_NAMES[:demo_sync_method_name]
+      @demo_sync_method_name || @provider&.settings&.dig('demo_sync_method_name').strip || DEFAULT_NAMES[:demo_sync_method_name]
     end
 
     def service_name
@@ -54,7 +54,7 @@ module NetforumEnterprise
     end
 
     def cdr_service_name
-      @service_name || @provider&.settings&.dig('cdr_service_name').strip || DEFAULT_NAMES[:cdr_service_name]
+      @cdr_service_name || @provider&.settings&.dig('cdr_service_name').strip || DEFAULT_NAMES[:cdr_service_name]
     end
 
     private
