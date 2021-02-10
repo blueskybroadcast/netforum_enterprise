@@ -38,23 +38,23 @@ module NetforumEnterprise
     end
 
     def product_sync_method_name
-      @product_sync_method_name || @provider&.settings&.dig('product_sync_method_name').strip || DEFAULT_NAMES[:product_sync_method_name]
+      @product_sync_method_name || @provider&.settings&.dig('product_sync_method_name')&.strip || DEFAULT_NAMES[:product_sync_method_name]
     end
 
     def event_sync_method_name
-      @event_sync_method_name || @provider&.settings&.dig('event_sync_method_name').strip || DEFAULT_NAMES[:event_sync_method_name]
+      @event_sync_method_name || @provider&.settings&.dig('event_sync_method_name')&.strip || DEFAULT_NAMES[:event_sync_method_name]
     end
 
     def demo_sync_method_name
-      @demo_sync_method_name || @provider&.settings&.dig('demo_sync_method_name').strip || DEFAULT_NAMES[:demo_sync_method_name]
+      @demo_sync_method_name || @provider&.settings&.dig('demo_sync_method_name')&.strip || DEFAULT_NAMES[:demo_sync_method_name]
     end
 
     def service_name
-      @service_name || @provider&.settings&.dig('service_name').strip || DEFAULT_NAMES[:service_name]
+      @service_name || @provider&.settings&.dig('service_name')&.strip || DEFAULT_NAMES[:service_name]
     end
 
     def cdr_service_name
-      @cdr_service_name || @provider&.settings&.dig('cdr_service_name').strip || DEFAULT_NAMES[:cdr_service_name]
+      @cdr_service_name || @provider&.settings&.dig('cdr_service_name')&.strip || DEFAULT_NAMES[:cdr_service_name]
     end
 
     private
