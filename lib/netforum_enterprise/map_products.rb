@@ -224,11 +224,16 @@ module NetforumEnterprise
     end
 
     def find_credit_key(ece_key:)
-      get_array('get_query', {
-        'szObjectName' => 'CEUCredit @TOP 1',
-        'szColumnList' => 'cet_key',
-        'szWhereClause' => "ece_key='#{ece_key}'",
-      }, StandardResponse, { output_subname: 'ceu_credit_object' })
+      service_name = @configuration.provider&.settings&.dig('service_name')&.strip.presence || 'LMSWeb'
+      get_array('execute_method', {
+        'serviceName' => service_name,
+        'methodName' => 'getCETKey',
+        'parameters' => {
+          'Parameter' => [
+            { 'Name' => 'ece_key', 'Value' => ece_key },
+          ]
+        },
+      }, StandardResponse, { output_subname: 'credit_type' })
     end
 
     def write_ceu_credit_earned(user_cst_key:, path_external_id:, credits_earned:, earned_date:, ceu_delete_flag: nil, ceu_cet_key:, writeback_time:)
