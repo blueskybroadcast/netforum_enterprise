@@ -170,7 +170,7 @@ module NetforumEnterprise
         'szColumnList' => 'cpp_key,cpp_cet_key,cpp_credit',
         'szWhereClause' => "cpp_prd_key='#{prd_key}'",
         'szOrderBy' => ''
-      }, StandardResponse, { no_subname: true })
+      }, StandardResponse, { output_subname: 'product_credit_object' })
     end
 
     def write_event_completion(reg_key:, cst_key:, evt_key:, iso_datetime:)
