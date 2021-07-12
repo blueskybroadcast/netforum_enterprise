@@ -173,6 +173,15 @@ module NetforumEnterprise
       }, StandardResponse, { output_subname: 'product_credit_object' })
     end
 
+    def get_ceu_credits(prd_key:)
+      get_array('get_query', {
+        'szObjectName' => 'CEUCredit',
+        'szColumnList' => 'cpp_key,cpp_cet_key,ceu_key,cpp_credit',
+        'szWhereClause' => "cpp_prd_key='#{prd_key}'",
+        'szOrderBy' => ''
+      }, StandardResponse, { output_subname: 'ceu_credit_object' })
+    end
+
     def write_event_completion(reg_key:, cst_key:, evt_key:, iso_datetime:)
       get_object('update_facade_object', {
         'szObjectName' => 'EventsRegistrant',
