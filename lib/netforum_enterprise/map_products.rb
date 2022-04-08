@@ -65,7 +65,7 @@ module NetforumEnterprise
       }, Invoice, { output_subname: 'invoice_object' })
     end
 
-    def get_invoice_details_by_cst_key(cst_key:, ivd_prc_prd_keys:)
+    def get_invoice_details_by_cst_key(months_limit = nil, cst_key:, ivd_prc_prd_keys:)
       if @configuration.use_execute_method?
         get_array('execute_method', {
           'serviceName' => "#{@configuration.service_name}",
@@ -79,6 +79,7 @@ module NetforumEnterprise
         }, InvoiceDetail, { output_subname: 'invoice_detail_object' })
       else
         where_clause = "cst_key='#{cst_key}'"
+        where_clause << " and evt_start_date > \'#{months_limit.to_i.months.ago.strftime('%Y-%m-01')}\'" if months_limit
         where_clause << " and ivd_prc_prd_key IN (#{key_list(ivd_prc_prd_keys)})" if ivd_prc_prd_keys
         get_array('get_query', {
           'szObjectName' => 'InvoiceDetail',
@@ -136,7 +137,7 @@ module NetforumEnterprise
       end
     end
 
-    def get_events_by_customer_key(cst_key:, registrant_reg_evt_keys:)
+    def get_events_by_customer_key(months_limit = nil, cst_key:, registrant_reg_evt_keys:)
       if @configuration.use_execute_method?
         get_array('execute_method', {
           'serviceName' => "#{@configuration.service_name}",
@@ -150,6 +151,7 @@ module NetforumEnterprise
         }, Registrant, { output_subname: 'events_registrant_object' })
       else
         where_clause = "reg_cst_key='#{cst_key}'"
+        where_clause << " and evt_start_date > \'#{months_limit.to_i.months.ago.strftime('%Y-%m-01')}\'" if months_limit
         where_clause << " and Registrant.reg_evt_key IN (#{key_list(registrant_reg_evt_keys)})" if registrant_reg_evt_keys
         get_array('get_query', {
           'szObjectName' => 'EventsRegistrant',
