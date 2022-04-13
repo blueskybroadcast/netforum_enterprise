@@ -105,7 +105,7 @@ module NetforumEnterprise
       get_object('web_activity_get_registrant_events', { 'RegKey' => reg_key }, RegistrantEvent)
     end
 
-    def get_events_registrant_by_event_key(evt_key:, cst_id: nil, cst_key: nil, return_list: nil, search_for_actual_events: false, object_name_param: '')
+    def get_events_registrant_by_event_key(evt_key:, cst_id: nil, cst_key: nil, return_list: nil, search_for_actual_events: false, object_name_option: '')
       if @configuration.use_execute_method? && cst_id.nil? && return_list.nil?
         get_array('execute_method', {
           'serviceName' => "#{@configuration.service_name}",
@@ -127,7 +127,7 @@ module NetforumEnterprise
                           ''
                         end
         where_clause << " and reg_cancel_date is null and reg_delete_flag='0'" if search_for_actual_events
-        object_name = object_name_param.present? ? "EventsRegistrant #{object_name_param}" : 'EventsRegistrant'
+        object_name = object_name_option.present? ? "EventsRegistrant #{object_name_option}" : 'EventsRegistrant'
 
         get_array('get_query', {
           'szObjectName' => object_name,
