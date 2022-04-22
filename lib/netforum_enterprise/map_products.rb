@@ -65,7 +65,7 @@ module NetforumEnterprise
       }, Invoice, { output_subname: 'invoice_object' })
     end
 
-    def get_invoice_details_by_cst_key(cst_key:, ivd_prc_prd_keys:)
+    def get_invoice_details_by_cst_key(months_limit = nil, cst_key:, ivd_prc_prd_keys:)
       if @configuration.use_execute_method?
         get_array('execute_method', {
           'serviceName' => "#{@configuration.service_name}",
@@ -79,6 +79,7 @@ module NetforumEnterprise
         }, InvoiceDetail, { output_subname: 'invoice_detail_object' })
       else
         where_clause = "cst_key='#{cst_key}'"
+        where_clause << " and ivd_add_date > \'#{months_limit.to_i.months.ago.strftime('%Y-%m-01')}\'" if months_limit
         where_clause << " and ivd_prc_prd_key IN (#{key_list(ivd_prc_prd_keys)})" if ivd_prc_prd_keys
         get_array('get_query', {
           'szObjectName' => 'InvoiceDetail',
@@ -136,7 +137,7 @@ module NetforumEnterprise
       end
     end
 
-    def get_events_by_customer_key(cst_key:, registrant_reg_evt_keys:)
+    def get_events_by_customer_key(months_limit = nil, cst_key:, registrant_reg_evt_keys:)
       if @configuration.use_execute_method?
         get_array('execute_method', {
           'serviceName' => "#{@configuration.service_name}",
@@ -150,6 +151,7 @@ module NetforumEnterprise
         }, Registrant, { output_subname: 'events_registrant_object' })
       else
         where_clause = "reg_cst_key='#{cst_key}'"
+        where_clause << " and reg_add_date > \'#{months_limit.to_i.months.ago.strftime('%Y-%m-01')}\'" if months_limit
         where_clause << " and Registrant.reg_evt_key IN (#{key_list(registrant_reg_evt_keys)})" if registrant_reg_evt_keys
         get_array('get_query', {
           'szObjectName' => 'EventsRegistrant',
@@ -245,7 +247,7 @@ module NetforumEnterprise
       }, StandardResponse, { output_subname: 'credit_type' })
     end
 
-    def write_ceu_credit_earned(user_cst_key:, path_external_id:, credits_earned:, earned_date:, ceu_delete_flag: nil, ceu_cet_key:, writeback_time:)
+    def write_ceu_credit_earned(user_cst_key:, credit_key_data:, credits_earned:, earned_date:, ceu_cet_key:, writeback_time:, ceu_delete_flag: nil, ceu_add_user: nil)
       ceu_credit_data = {
         'ceu_ind_cst_key' => user_cst_key,
         'ceu_credit' => credits_earned.to_s,
@@ -254,12 +256,8 @@ module NetforumEnterprise
         'ceu_cet_key' => ceu_cet_key
       }
       ceu_credit_data['ceu_delete_flag'] = ceu_delete_flag if ceu_delete_flag
-
-      if path_external_id.first(2).casecmp('p:').zero?
-        ceu_credit_data['ceu_cpp_key'] = path_external_id.slice(2..-1)
-      else
-        ceu_credit_data['ceu_ece_key'] = path_external_id
-      end
+      ceu_credit_data['ceu_add_user'] = ceu_add_user if ceu_add_user
+      ceu_credit_data.merge!(credit_key_data)
 
       get_object('insert_facade_object', {
         'szObjectName' => 'CEUCredit',
