@@ -330,7 +330,9 @@ module NetforumEnterprise
         globals.wsdl @configuration.wsdl
         globals.adapter :net_http
 
-        if globals.wsdl.start_with?('http') || @configuration.try(:endpoint).present?
+        if @configuration.try(:endpoint).present?
+          globals.endpoint @configuration.endpoint
+        elsif globals.wsdl.start_with?('http')
           globals.endpoint @configuration.wsdl.gsub('?WSDL', '')
         end
       end
