@@ -328,8 +328,13 @@ module NetforumEnterprise
 
       @client = Savon.client(options) do |globals|
         globals.wsdl @configuration.wsdl
-        globals.endpoint @configuration.wsdl.gsub('?WSDL', '')
         globals.adapter :net_http
+
+        if @configuration.try(:endpoint).present?
+          globals.endpoint @configuration.endpoint
+        elsif @configuration.wsdl.start_with?('http')
+          globals.endpoint @configuration.wsdl.gsub('?WSDL', '')
+        end
       end
     end
 
